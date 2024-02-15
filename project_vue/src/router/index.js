@@ -3,6 +3,7 @@ import store from '../store/index.js'
 import HomeView from '../views/HomeView.vue'
 import SignUpView from '../views/SignUpView'
 import LoginView from '../views/LoginView'
+import NotFoundView from '../views/NotFoundView'
 
 const routes = [
   {
@@ -15,7 +16,7 @@ const routes = [
   },
   {
     path: '/signup',
-    name: 'signpup',
+    name: 'signup',
     component: SignUpView
   },
   {
@@ -23,6 +24,11 @@ const routes = [
     name: 'login',
     component: LoginView
   },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'notfound',
+    component: NotFoundView
+  }
 ]
 
 const router = createRouter({

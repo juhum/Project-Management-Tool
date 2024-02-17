@@ -2,6 +2,7 @@
   <nav class="navbar">
     <ul>
       <li><router-link to="/" class="navbar-item">Home</router-link></li>
+     <li><router-link to="/projects" class="navbar-item">Projects</router-link></li>
     </ul>
     <ul class="navbar-right">
       <template v-if="$store.state.isAuthenticated">
@@ -49,6 +50,7 @@ export default {
 .navbar-item {
   color: #fff;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .navbar-item.router-link-exact-active {

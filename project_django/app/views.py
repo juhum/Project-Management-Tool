@@ -5,6 +5,7 @@ from rest_framework import status
 from .models import Project, Task, File, Milestone, ProgressReport, Notification, PriorityLevel
 from .serializers import ProjectSerializer, TaskSerializer, FileSerializer, MilestoneSerializer, ProgressReportSerializer, NotificationSerializer, PriorityLevelSerializer
 from rest_framework.permissions import IsAuthenticated
+from django.http import Http404
 
 class ProjectView(APIView):
     permission_classes = [IsAuthenticated]
@@ -29,7 +30,7 @@ class ProjectDetailView(APIView):
         try:
             return Project.objects.get(pk=pk)
         except Project.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            raise Http404
 
     def get(self, request, pk, format=None):
         project = self.get_object(pk)

@@ -4,6 +4,7 @@ import HomeView from '../views/HomeView.vue'
 import SignUpView from '../views/SignUpView'
 import LoginView from '../views/LoginView'
 import NotFoundView from '../views/NotFoundView'
+import ProjectsView from '../views/ProjectsView'
 
 const routes = [
   {
@@ -28,7 +29,15 @@ const routes = [
     path: '/:pathMatch(.*)*',
     name: 'notfound',
     component: NotFoundView
+  },
+  {
+  path: '/projects',
+  name: 'projects',
+  component: ProjectsView,
+  meta: {
+    requiresAuth: true
   }
+}
 ]
 
 const router = createRouter({

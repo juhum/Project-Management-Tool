@@ -8,6 +8,12 @@ class Project(models.Model):
     end_date = models.DateField()
     status = models.CharField(max_length=50)
     team_members = models.ManyToManyField(User)  # Use Djoser's User model
+    # not sure if these method needed later
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return f'/projects/{self.pk}/'
 
 class PriorityLevel(models.Model):
     level = models.CharField(max_length=20)

@@ -8,7 +8,7 @@ class Project(models.Model):
     end_date = models.DateField()
     status = models.CharField(max_length=50)
     team_members = models.ManyToManyField(User)  # Use Djoser's User model
-    # not sure if these method needed later
+    # not sure if these methods needed later
     def __str__(self):
         return self.title
 

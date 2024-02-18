@@ -51,9 +51,14 @@
         <p>End Date: {{ project.end_date }}</p>
         <p>Status: {{ project.status }}</p>
         <p>Team Members:</p>
-        <ul>
-            <li v-for="member in project.team_members" :key="member.id">{{ member.username }}</li>
-        </ul>
+<ul>
+  <li v-for="memberId in project.team_members" :key="memberId">
+    {{ getUserUsername(memberId) }}
+  </li>
+</ul>
+
+
+
       </div>
     </div>
   </div>
@@ -124,10 +129,10 @@ addProject(){
         this.newProject = {
         title: '',
         description: '',
-        start_date: '', // Add a default start date
-        end_date: '',   // Add a default end date
-        status: '',     // Add a default status
-        team_members: [] // Initialize as an empty array
+        start_date: '', 
+        end_date: '',   
+        status: '',     
+        team_members: [] 
         };
         this.showForm = false;
       })
@@ -162,7 +167,11 @@ addProject(){
     .catch(error => {
       console.error('Error deleting Project:', error);
     });
-}
+},
+  getUserUsername(memberId) {
+    const user = this.users.find(user => user.id === memberId);
+    return user ? user.username : 'Unknown'; // Return username or a placeholder if user is not found
+  }
   }
 };
 </script>

@@ -153,6 +153,7 @@ editProject(project) {
     this.projectToEdit = project;
 },
 
+// SaveProject method
 saveProject() {
     // Update the project object with the edited values from newProject
     this.projectToEdit.title = this.newProject.title;
@@ -169,15 +170,21 @@ saveProject() {
         }
     })
     .then(response => {
+        // Find the index of the project to be updated
         const index = this.Projects.findIndex(project => project.id === this.projectToEdit.id);
-        this.$set(this.Projects, index, response.data);
-        this.projectToEdit = null;
-        this.showForm = false;
+        // Update the project in the Projects array directly
+        this.Projects[index] = response.data;
+        this.projectToEdit = null; // Reset projectToEdit after saving
+        this.showForm = false; // Hide the form
     })
     .catch(error => {
         console.error('Error updating Project:', error);
     });
 },
+
+
+
+
 
     deleteProject(project) {
   axios.delete(`/api/v1/projects/${project.id}/`)

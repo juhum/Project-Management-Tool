@@ -22,8 +22,8 @@
       <button type="submit">Add Project</button>
     </form>
 
-    <div v-if="projectToEdit" class="edit-project-form">
-      <form @submit.prevent="saveProject">
+    
+      <form v-if="projectToEdit" @submit.prevent="saveProject" class="edit-project-form">
         <input v-model="newProject.title" placeholder="Project Title" required>
       <textarea v-model="newProject.description" placeholder="Project Description"></textarea>
       <input type="date" v-model="newProject.start_date" placeholder="Start Date" required>
@@ -39,7 +39,7 @@
       <button type="submit">Add Project</button>
         <button type="submit">Save Project</button>
       </form>
-    </div>
+
 
     <div class="project-list">
       <div v-for="project in Projects" :key="project.id" class="project-item">
@@ -140,24 +140,45 @@ addProject(){
         console.error('Error creating project:', error);
       });
     },
-        editProject(project) {
-      this.projectToEdit = Object.assign({}, project);
-    },
-        saveProject() {
+editProject(project) {
+    // Assign the values of the project being edited to newProject
+    this.newProject.title = project.title;
+    this.newProject.description = project.description;
+    this.newProject.start_date = project.start_date;
+    this.newProject.end_date = project.end_date;
+    this.newProject.status = project.status;
+    this.newProject.team_members = project.team_members;
+
+    // Set the projectToEdit to the current project
+    this.projectToEdit = project;
+},
+
+saveProject() {
+    // Update the project object with the edited values from newProject
+    this.projectToEdit.title = this.newProject.title;
+    this.projectToEdit.description = this.newProject.description;
+    this.projectToEdit.start_date = this.newProject.start_date;
+    this.projectToEdit.end_date = this.newProject.end_date;
+    this.projectToEdit.status = this.newProject.status;
+    this.projectToEdit.team_members = this.newProject.team_members;
+
+    // Send a PUT request to update the project on the server
     axios.put(`/api/v1/projects/${this.projectToEdit.id}/`, this.projectToEdit, {
         headers: {
-        'Authorization': `token ${localStorage.token}`,
+            'Authorization': `token ${localStorage.token}`,
         }
     })
     .then(response => {
         const index = this.Projects.findIndex(project => project.id === this.projectToEdit.id);
-        this.Projects.splice(index, 1, response.data);
-        this.projectToEdit = null; 
+        this.$set(this.Projects, index, response.data);
+        this.projectToEdit = null;
+        this.showForm = false;
     })
     .catch(error => {
         console.error('Error updating Project:', error);
     });
-    },
+},
+
     deleteProject(project) {
   axios.delete(`/api/v1/projects/${project.id}/`)
     .then(() => {

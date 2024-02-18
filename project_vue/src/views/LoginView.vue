@@ -4,12 +4,22 @@
     <form @submit.prevent="submitForm" class="login-form">
       <div class="form-field">
         <label for="username">Username</label>
-        <input type="text" id="username" v-model="username" class="input-field">
+        <input
+          type="text"
+          id="username"
+          v-model="username"
+          class="input-field"
+        />
       </div>
 
       <div class="form-field">
         <label for="password">Password</label>
-        <input type="password" id="password" v-model="password" class="input-field">
+        <input
+          type="password"
+          id="password"
+          v-model="password"
+          class="input-field"
+        />
       </div>
 
       <div v-if="errors.length" class="error-notification">
@@ -21,67 +31,71 @@
       </div>
     </form>
 
-    <hr>
+    <hr />
 
-    <router-link to="/signup" class="signup-link">Create new account</router-link>
+    <router-link to="/signup" class="signup-link"
+      >Create new account</router-link
+    >
   </div>
 </template>
 
 <script>
-import axios from 'axios'
-export default{
-    name: 'Login',
-    data() {
-        return {
-            username: '',
-            password: '',
-            errors: []
-        }
-    },
-    mounted(){
-        document.title = "Login"
-    },
- methods: {
-        async submitForm() {
-            axios.defaults.headers.common["Authorization"] = ""
+import axios from "axios";
+export default {
+  name: "Login",
+  data() {
+    return {
+      username: "",
+      password: "",
+      errors: [],
+    };
+  },
+  mounted() {
+    document.title = "Login";
+  },
+  methods: {
+    async submitForm() {
+      axios.defaults.headers.common["Authorization"] = "";
 
-            localStorage.removeItem("token")
+      localStorage.removeItem("token");
 
-            const formData = {
-                username: this.username,
-                password: this.password
+      const formData = {
+        username: this.username,
+        password: this.password,
+      };
+
+      await axios
+        .post("/api/v1/token/login/", formData)
+        .then((response) => {
+          const token = response.data.auth_token;
+
+          this.$store.commit("setToken", token);
+
+          axios.defaults.headers.common["Authorization"] = "Token " + token;
+
+          localStorage.setItem("token", token);
+
+          this.$router.push("/");
+        })
+        .catch((error) => {
+          if (
+            error.response.status === 400 &&
+            error.response.data.non_field_errors
+          ) {
+            this.errors.push("Invalid username or password. Please try again.");
+          } else if (error.response) {
+            for (const property in error.response.data) {
+              this.errors.push(`${property}: ${error.response.data[property]}`);
             }
+          } else {
+            this.errors.push("Something went wrong. Please try again");
 
-            await axios
-                .post("/api/v1/token/login/", formData)
-                .then(response => {
-                    const token = response.data.auth_token
-
-                    this.$store.commit('setToken', token)
-                    
-                    axios.defaults.headers.common["Authorization"] = "Token " + token
-
-                    localStorage.setItem("token", token)
-
-                this.$router.push('/')
-                })
-                .catch(error => {
-                    if (error.response.status === 400 && error.response.data.non_field_errors) {
-                    this.errors.push('Invalid username or password. Please try again.')
-                    }
-                    else if (error.response) {
-                        for (const property in error.response.data) {
-                            this.errors.push(`${property}: ${error.response.data[property]}`)
-                        }
-                    } else {
-                        this.errors.push('Something went wrong. Please try again')
-                        
-                        console.log(JSON.stringify(error))
-                    }
-                })
-        }
-    }
-}
+            console.log(JSON.stringify(error));
+          }
+        });
+    },
+  },
+};
 </script>
 
 
@@ -90,8 +104,8 @@ export default{
   max-width: 400px;
   margin: 0 auto;
   padding: 20px;
-      border-radius: 10px;
-    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
 }
 
@@ -112,7 +126,7 @@ export default{
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 3px;
-  width: 100%; 
+  width: 100%;
 }
 
 .error-notification {
@@ -148,7 +162,7 @@ export default{
   text-decoration: underline;
 }
 
-.navbar{
+.navbar {
   display: none;
 }
 </style>

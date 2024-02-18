@@ -4,17 +4,32 @@
     <form @submit.prevent="submitForm" class="signup-form">
       <div class="form-field">
         <label for="username">Username</label>
-        <input type="text" id="username" v-model="username" class="input-field">
+        <input
+          type="text"
+          id="username"
+          v-model="username"
+          class="input-field"
+        />
       </div>
 
       <div class="form-field">
         <label for="password">Password</label>
-        <input type="password" id="password" v-model="password" class="input-field">
+        <input
+          type="password"
+          id="password"
+          v-model="password"
+          class="input-field"
+        />
       </div>
 
       <div class="form-field">
         <label for="password2">Confirm Password</label>
-        <input type="password" id="password2" v-model="password2" class="input-field">
+        <input
+          type="password"
+          id="password2"
+          v-model="password2"
+          class="input-field"
+        />
       </div>
 
       <div v-if="errors.length" class="error-notification">
@@ -26,72 +41,75 @@
       </div>
     </form>
 
-    <hr>
+    <hr />
 
-    <router-link to="/login" class="login-link">Already have an account?</router-link>
+    <router-link to="/login" class="login-link"
+      >Already have an account?</router-link
+    >
   </div>
 </template>
 
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 export default {
-    name: "SignUpView",
-    data (){
-        return {
-            username: '',
-            password: '',
-            password2: '',
-            errors: []
-        }
+  name: "SignUpView",
+  data() {
+    return {
+      username: "",
+      password: "",
+      password2: "",
+      errors: [],
+    };
+  },
+  mounted() {
+    document.title = "Sign Up";
+  },
+  methods: {
+    submitForm() {
+      this.errors = [];
+
+      if (this.username === "") {
+        this.errors.push("Username is missing");
+      }
+
+      if (this.password === "") {
+        this.errors.push("Password is too short");
+      }
+
+      if (this.password !== this.password2) {
+        this.errors.push("Passwords doesn't match");
+      }
+
+      if (!this.errors.length) {
+        const formData = {
+          username: this.username,
+          password: this.password,
+        };
+
+        axios
+          .post("/api/v1/users/", formData)
+          .then((response) => {
+            this.registrationMessage = "Registration successful!";
+            this.$router.push("/login");
+          })
+          .catch((error) => {
+            if (error.response) {
+              for (const property in error.response.data) {
+                this.errors.push(
+                  `${property}: ${error.response.data[property]}`
+                );
+              }
+              console.log(JSON.stringify(error.response.data));
+            } else if (error.message) {
+              this.errors.push("Something went wrong. Please try again");
+              console.log(JSON.stringify(error));
+            }
+          });
+      }
     },
-    mounted(){
-    document.title = "Sign Up"
-    },
-    methods: {
-        submitForm(){
-            this.errors = []
-
-            if (this.username === ''){
-                this.errors.push("Username is missing")
-            }
-
-            if (this.password === ''){
-                this.errors.push("Password is too short")
-            }
-
-            if (this.password !== this.password2){
-                this.errors.push("Passwords doesn\'t match")
-            }
-
-            if (!this.errors.length){
-                const formData = {
-                    username: this.username,
-                    password: this.password
-                }
-
-                axios
-                .post("/api/v1/users/", formData)
-                .then(response =>{
-                    this.registrationMessage = 'Registration successful!';
-                    this.$router.push('/login')
-                }).catch(error =>{
-                    if (error.response){
-                        for (const property in error.response.data) { 
-                            this.errors.push(`${property}: ${error.response.data[property]}`)
-                        }
-                        console.log(JSON.stringify(error.response.data))
-                    } else if(error.message) {
-                        this.errors.push('Something went wrong. Please try again')
-                        console.log(JSON.stringify(error))
-                    }
-                })
-                
-                
-            }
-        }
-    }
-}
+  },
+};
 </script>
 
 

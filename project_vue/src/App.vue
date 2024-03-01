@@ -3,9 +3,7 @@
   <section>
   <router-view style/>
   </section>
-  <!-- <footer class="footer">
-    <p>test</p>
-    </footer> -->
+  <Footer />
   </div>
 </template>
 
@@ -27,7 +25,7 @@ body{
 section{
   padding: 50px;
   margin-bottom: 50px;
-  // min-height: 100vh;
+  min-height: 100vh;
 }
 
 .footer {
@@ -43,6 +41,7 @@ section{
 </style>
 <script>
 import axios from 'axios'
+import Footer from "@/components/Footer.vue";
 export default {
   beforeCreate(){
     this.$store.commit('initializeStore')
@@ -54,6 +53,9 @@ export default {
     else{
       axios.defaults.headers.common['Authorization'] = ""
     }
+  },
+  components: {
+    Footer,
   },
 }
 </script>

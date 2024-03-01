@@ -175,4 +175,8 @@ export default {
 .login-link:hover {
   text-decoration: underline;
 }
+
+.footer{
+  display: none;
+}
 </style>

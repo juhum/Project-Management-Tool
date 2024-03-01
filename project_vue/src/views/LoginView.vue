@@ -165,4 +165,8 @@ export default {
 .navbar {
   display: none;
 }
+
+footer{
+  display: none;
+}
 </style>

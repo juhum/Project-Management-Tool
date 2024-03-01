@@ -3,9 +3,9 @@
   <section>
   <router-view style/>
   </section>
-  <footer class="footer">
+  <!-- <footer class="footer">
     <p>test</p>
-    </footer>
+    </footer> -->
   </div>
 </template>
 
@@ -27,7 +27,7 @@ body{
 section{
   padding: 50px;
   margin-bottom: 50px;
-  min-height: 100vh;
+  // min-height: 100vh;
 }
 
 .footer {

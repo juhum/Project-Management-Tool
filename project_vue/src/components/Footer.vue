@@ -19,8 +19,7 @@ export default {
   padding: 10px 0;
   text-align: center;
   border-top: 1px solid #dee2e6;
-  /* margin-top: auto; Push the footer to the bottom */
-  position: absolute;
+  position: fixed;
   bottom: 0;
 }
 

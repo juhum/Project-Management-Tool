@@ -106,12 +106,14 @@
         </ul>
       </div>
     </div>
+    <Footer />
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import Navbar from "@/components/Navbar.vue";
+import Footer from "@/components/Footer.vue";
 export default {
   name: "ProjectsView",
   data() {
@@ -132,6 +134,7 @@ export default {
   },
   components: {
     Navbar,
+    Footer,
   },
   mounted() {
     this.getProjects();

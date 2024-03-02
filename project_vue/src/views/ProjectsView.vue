@@ -27,7 +27,7 @@
         required
       />
       <input v-model="newProject.status" placeholder="Status" required />
-<div v-if="users.length > 0">
+<div class="user-list" v-if="users.length > 0">
   <div v-for="user in users" :key="user.id">
     <input type="checkbox" :id="'user_' + user.id" v-model="newProject.team_members" :value="user.id">
     <label :for="'user_' + user.id">{{ user.username }}</label>
@@ -62,13 +62,14 @@
         required
       />
       <input v-model="newProject.status" placeholder="Status" required />
-<div v-if="users.length > 0">
+<div class="user-list" v-if="users.length > 0">
   <div v-for="user in users" :key="user.id">
     <input type="checkbox" :id="'user_' + user.id" v-model="newProject.team_members" :value="user.id">
     <label :for="'user_' + user.id">{{ user.username }}</label>
   </div>
 </div>
 <div v-else>No users available.</div>
+
 
 
       <button type="submit">Save Project</button>
@@ -291,4 +292,11 @@ export default {
 .project-item p {
   margin: 5px 0;
 }
+
+.user-list {
+  max-height: 50px; /* Adjust as needed */
+  overflow-y: auto;
+  width:25%;
+}
+
 </style>

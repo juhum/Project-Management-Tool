@@ -79,7 +79,7 @@
       <button type="submit">Save Project</button>
     </form>
 
-    <div class="project-list">
+    <div class="project-grid">
       <div v-for="project in Projects" :key="project.id" class="project-item">
         <button
           v-if="$store.state.isAuthenticated"
@@ -266,6 +266,17 @@ export default {
 
 .edit-project-form {
   margin-bottom: 20px;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-gap: 20px;
+}
+
+.project-item {
+  border: 1px solid #ccc;
+  padding: 10px;
 }
 
 .project-item {

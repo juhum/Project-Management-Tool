@@ -27,16 +27,14 @@
         required
       />
       <input v-model="newProject.status" placeholder="Status" required />
-      <select
-        v-if="users.length > 0"
-        v-model="newProject.team_members"
-        multiple
-      >
-        <option v-for="user in users" :key="user.id" :value="user.id">
-          {{ user.username }}
-        </option>
-      </select>
-      <div v-else>No users available.</div>
+<div v-if="users.length > 0">
+  <div v-for="user in users" :key="user.id">
+    <input type="checkbox" :id="'user_' + user.id" v-model="newProject.team_members" :value="user.id">
+    <label :for="'user_' + user.id">{{ user.username }}</label>
+  </div>
+</div>
+<div v-else>No users available.</div>
+
 
       <button type="submit">Add Project</button>
     </form>
@@ -64,18 +62,15 @@
         required
       />
       <input v-model="newProject.status" placeholder="Status" required />
-      <select
-        v-if="users.length > 0"
-        v-model="newProject.team_members"
-        multiple
-      >
-        <option v-for="user in users" :key="user.id" :value="user.id">
-          {{ user.username }}
-        </option>
-      </select>
-      <div v-else>No users available.</div>
+<div v-if="users.length > 0">
+  <div v-for="user in users" :key="user.id">
+    <input type="checkbox" :id="'user_' + user.id" v-model="newProject.team_members" :value="user.id">
+    <label :for="'user_' + user.id">{{ user.username }}</label>
+  </div>
+</div>
+<div v-else>No users available.</div>
 
-      <button type="submit">Add Project</button>
+
       <button type="submit">Save Project</button>
     </form>
 

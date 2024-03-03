@@ -21,6 +21,9 @@ export default {
     Navbar,
     HelloWorld,
     Footer,
+  },
+  mounted() {
+    document.title = "Home";
   }
 }
 </script>

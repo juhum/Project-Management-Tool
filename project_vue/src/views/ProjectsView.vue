@@ -6,6 +6,9 @@
       <button v-if="$store.state.isAuthenticated" @click="showForm = !showForm">
         Add Project
       </button>
+      <label>
+        <input type="checkbox" v-model="showOnlyUserProjects"> Show only my projects
+      </label>
     </div>
 
     <form v-if="showForm" @submit.prevent="addProject" class="project-form">
@@ -76,7 +79,7 @@
     </form>
 
     <div class="project-grid">
-      <div v-for="project in Projects" :key="project.id" class="project-item">
+      <div v-for="project in filteredProjects" :key="project.id" class="project-item">
         <button
           v-if="$store.state.isAuthenticated"
           @click="editProject(project)"
@@ -126,6 +129,8 @@ export default {
       showForm: false,
       projectToEdit: null,
       users: [],
+      currentUser: null,
+      showOnlyUserProjects: false,
     };
   },
   components: {
@@ -136,6 +141,17 @@ export default {
     this.getProjects();
     document.title = "Projects";
     this.getUsers();
+  },
+    computed: {
+    filteredProjects() {
+      if (this.showOnlyUserProjects) {
+        return this.Projects.filter(project =>
+          project.team_members.includes(this.currentUser.id)
+        );
+      } else {
+        return this.Projects;
+      }
+    }
   },
   methods: {
     getProjects() {
@@ -157,11 +173,27 @@ export default {
         })
         .then((response) => {
           this.users = response.data.results;
+          this.getCurrentUser();
         })
         .catch((error) => {
           console.log(error);
         });
     },
+    getCurrentUser(){
+      axios
+    .get("/api/v1/users/me", {
+      headers: {
+        Authorization: `token ${localStorage.token}`,
+      },
+    })
+    .then((response) => {
+      this.currentUser = response.data;
+      this.currentUser.id = response.data.id; // Assuming the ID is directly accessible in response.data
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+},
     addProject() {
       axios
         .post("/api/v1/projects/", this.newProject, {

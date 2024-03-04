@@ -140,7 +140,7 @@ export default {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 3px;
-  width: 100%;
+  width: 95%;
 }
 
 .error-notification {

@@ -34,7 +34,7 @@
     <hr />
 
     <router-link to="/signup" class="signup-link"
-      >Create new account</router-link
+      >Create a new account</router-link
     >
   </div>
 </template>
@@ -126,7 +126,7 @@ export default {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 3px;
-  width: 100%;
+  width: 95%;
 }
 
 .error-notification {

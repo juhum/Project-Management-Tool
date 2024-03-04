@@ -188,7 +188,7 @@ export default {
     })
     .then((response) => {
       this.currentUser = response.data;
-      this.currentUser.id = response.data.id; // Assuming the ID is directly accessible in response.data
+      this.currentUser.id = response.data.id;
     })
     .catch((error) => {
       console.log(error);
@@ -326,7 +326,7 @@ export default {
 }
 
 .user-list {
-  max-height: 50px; /* Adjust as needed */
+  max-height: 50px; 
   overflow-y: auto;
   width:25%;
 }

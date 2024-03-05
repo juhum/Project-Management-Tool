@@ -247,7 +247,6 @@ export default {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
 .project-manager__header {

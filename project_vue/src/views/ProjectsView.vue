@@ -1,6 +1,6 @@
 <template>
   <div class="project-manager">
-    <div class="projekct-manager__header">
+    <div class="project-manager__header">
       <Navbar />
       <h1>Projects</h1>
       <button v-if="$store.state.isAuthenticated" @click="cancelProject()">

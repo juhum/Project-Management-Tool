@@ -3,15 +3,15 @@
     <div class="projekct-manager__header">
       <Navbar />
       <h1>Projects</h1>
-      <button v-if="$store.state.isAuthenticated" @click="showForm = !showForm">
-        Add Project
+      <button v-if="$store.state.isAuthenticated" @click="cancelProject()">
+        {{ showForm ? 'Cancel' : 'Add Project' }}
       </button>
       <label>
         <input type="checkbox" v-model="showOnlyUserProjects"> Show only my projects
       </label>
     </div>
 
-    <form v-if="showForm" @submit.prevent="addProject" class="project-form">
+    <form v-if="showForm" @submit.prevent="isEditing ? saveProject() : addProject()" class="project-form">
       <input v-model="newProject.title" placeholder="Project Title" required />
       <textarea
         v-model="newProject.description"
@@ -30,52 +30,15 @@
         required
       />
       <input v-model="newProject.status" placeholder="Status" required />
-<div class="user-list" v-if="users.length > 0">
-  <div v-for="user in users" :key="user.id">
-    <input type="checkbox" :id="'user_' + user.id" v-model="newProject.team_members" :value="user.id">
-    <label :for="'user_' + user.id">{{ user.username }}</label>
-  </div>
-</div>
-<div v-else>No users available.</div>
+      <div class="user-list" v-if="users.length > 0">
+        <div v-for="user in users" :key="user.id">
+          <input type="checkbox" :id="'user_' + user.id" v-model="newProject.team_members" :value="user.id">
+          <label :for="'user_' + user.id">{{ user.username }}</label>
+        </div>
+      </div>
+      <div v-else>No users available.</div>
 
-
-      <button type="submit">Add Project</button>
-    </form>
-
-    <form
-      v-if="projectToEdit"
-      @submit.prevent="saveProject"
-      class="edit-project-form"
-    >
-      <input v-model="newProject.title" placeholder="Project Title" required />
-      <textarea
-        v-model="newProject.description"
-        placeholder="Project Description"
-      ></textarea>
-      <input
-        type="date"
-        v-model="newProject.start_date"
-        placeholder="Start Date"
-        required
-      />
-      <input
-        type="date"
-        v-model="newProject.end_date"
-        placeholder="End Date"
-        required
-      />
-      <input v-model="newProject.status" placeholder="Status" required />
-<div class="user-list" v-if="users.length > 0">
-  <div v-for="user in users" :key="user.id">
-    <input type="checkbox" :id="'user_' + user.id" v-model="newProject.team_members" :value="user.id">
-    <label :for="'user_' + user.id">{{ user.username }}</label>
-  </div>
-</div>
-<div v-else>No users available.</div>
-
-
-
-      <button type="submit">Save Project</button>
+      <button type="submit">{{ isEditing ? 'Save Project' : 'Add Project' }}</button>
     </form>
 
     <div class="project-grid">
@@ -126,11 +89,12 @@ export default {
         status: "",
         team_members: [],
       },
-      showForm: false,
       projectToEdit: null,
       users: [],
       currentUser: null,
       showOnlyUserProjects: false,
+      showForm: false, // Track form visibility
+      isEditing: false,
     };
   },
   components: {
@@ -142,7 +106,7 @@ export default {
     document.title = "Projects";
     this.getUsers();
   },
-    computed: {
+  computed: {
     filteredProjects() {
       if (this.showOnlyUserProjects) {
         return this.Projects.filter(project =>
@@ -203,21 +167,15 @@ export default {
         })
         .then((response) => {
           this.Projects.push(response.data);
-          this.newProject = {
-            title: "",
-            description: "",
-            start_date: "",
-            end_date: "",
-            status: "",
-            team_members: [],
-          };
-          this.showForm = false;
+          this.resetForm();
         })
         .catch((error) => {
           console.error("Error creating project:", error);
         });
     },
     editProject(project) {
+       this.isEditing = true;
+
       this.newProject.title = project.title;
       this.newProject.description = project.description;
       this.newProject.start_date = project.start_date;
@@ -226,17 +184,12 @@ export default {
       this.newProject.team_members = project.team_members;
 
       this.projectToEdit = project;
+      this.showForm = true; // Show the form
+      
     },
     saveProject() {
-      this.projectToEdit.title = this.newProject.title;
-      this.projectToEdit.description = this.newProject.description;
-      this.projectToEdit.start_date = this.newProject.start_date;
-      this.projectToEdit.end_date = this.newProject.end_date;
-      this.projectToEdit.status = this.newProject.status;
-      this.projectToEdit.team_members = this.newProject.team_members;
-
       axios
-        .put(`/api/v1/projects/${this.projectToEdit.id}/`, this.projectToEdit, {
+        .put(`/api/v1/projects/${this.projectToEdit.id}/`, this.newProject, {
           headers: {
             Authorization: `token ${localStorage.token}`,
           },
@@ -246,7 +199,8 @@ export default {
             (project) => project.id === this.projectToEdit.id
           );
           this.Projects[index] = response.data;
-          this.projectToEdit = null;
+          this.resetForm();
+          this.isEditing = false;
           this.showForm = false;
         })
         .catch((error) => {
@@ -268,10 +222,25 @@ export default {
       const user = this.users.find((user) => user.id === memberId);
       return user ? user.username : "Unknown";
     },
+    resetForm() {
+      this.newProject = {
+        title: "",
+        description: "",
+        start_date: "",
+        end_date: "",
+        status: "",
+        team_members: [],
+      };
+      this.projectToEdit = null;
+      this.showForm = !this.showForm 
+      this.isEditing = false;
+    },
+    cancelProject() {
+      this.resetForm();
+    }
   },
 };
 </script>
-
 
 <style scoped>
 .project-manager {
@@ -292,19 +261,10 @@ export default {
   margin-bottom: 20px;
 }
 
-.edit-project-form {
-  margin-bottom: 20px;
-}
-
 .project-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   grid-gap: 20px;
-}
-
-.project-item {
-  border: 1px solid #ccc;
-  padding: 10px;
 }
 
 .project-item {

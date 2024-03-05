@@ -5,6 +5,7 @@ import SignUpView from '../views/SignUpView'
 import LoginView from '../views/LoginView'
 import NotFoundView from '../views/NotFoundView'
 import ProjectsView from '../views/ProjectsView'
+import ProjectDetailView from '../views/ProjectDetailView'
 
 const routes = [
   {
@@ -37,6 +38,15 @@ const routes = [
   meta: {
     requiresAuth: true
   }
+  },
+  {
+    path: '/projects/:projectId',
+    name: 'ProjectDetailView',
+    component: ProjectDetailView,
+    props: true,
+    meta: {
+      requiresAuth: true
+    }
 }
 ]
 

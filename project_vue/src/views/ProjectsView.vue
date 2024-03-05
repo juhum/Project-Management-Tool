@@ -68,6 +68,9 @@
             {{ getUserUsername(memberId) }}
           </li>
         </ul>
+        <button v-if="$store.state.isAuthenticated" @click="viewProjectDetails(project.id)">
+          Details
+        </button>
       </div>
     </div>
     <Footer />
@@ -239,6 +242,9 @@ export default {
     },
     cancelProject() {
       this.resetForm();
+    },
+    viewProjectDetails(projectId){
+      this.$router.push({ name: 'ProjectDetailView', params: { projectId: projectId } });
     }
   },
 };

@@ -3,11 +3,13 @@
     <div class="project-manager__header">
       <Navbar />
       <h1>Projects</h1>
+      </div>
+      <div class="project-manager__actions">
       <button v-if="$store.state.isAuthenticated" @click="cancelProject()">
         {{ showForm ? 'Cancel' : 'Add Project' }}
       </button>
       <label>
-        <input type="checkbox" v-model="showOnlyUserProjects"> Show only my projects
+        <input type="checkbox" v-model="showOnlyUserProjects"> Enrolled Projects Only
       </label>
     </div>
 
@@ -251,13 +253,39 @@ export default {
 
 .project-manager__header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
 .project-form {
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  padding: 20px;
   margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+.project-form input,
+.project-form textarea {
+  width: 97%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  resize: vertical;
+}
+
+.project-form button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.project-form button:hover {
+  background-color: #0056b3;
 }
 
 .project-grid {
@@ -267,27 +295,66 @@ export default {
 }
 
 .project-item {
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin-bottom: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  border: 1px solid #ddd;
 }
 
 .project-item button {
   margin-right: 10px;
 }
 
-.project-item h2 {
-  margin: 0;
+.project-item h2,
+.project-item p {
+  margin: 10px 0;
 }
 
-.project-item p {
-  margin: 5px 0;
+button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+
+
+
+.project-manager__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.project-manager__actions button {
+  margin-right: 20px;
 }
 
 .user-list {
-  max-height: 50px; 
+  max-height: 80px; 
   overflow-y: auto;
-  width:25%;
+  width: 30%;
+  padding: 0;
+  margin: 0;
 }
 
+.user-list > div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  grid-gap: 5px;
+  margin-bottom: 5px;
+}
+
+.user-list input[type="checkbox"] {
+  margin: 0;
+}
 </style>
+

@@ -42,13 +42,14 @@ export default {
   },
   mounted() {
     this.getProjectDetails(this.projectId);
-    this.getUsers(); // Fetch users when the component is mounted
+    this.getUsers();
   },
   methods: {
     getProjectDetails(projectId) {
       axios.get(`/api/v1/projects/${projectId}`)
         .then(response => {
           this.project = response.data;
+          document.title = this.project.title;
         })
         .catch(error => {
           console.error('Error fetching project details:', error);

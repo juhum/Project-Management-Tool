@@ -16,6 +16,7 @@
     </div>
     <div v-else>
       <p>Loading project details...</p>
+      <div class="loading"></div>
     </div>
     <Footer />
   </div>
@@ -54,7 +55,6 @@ export default {
         .catch((error) => {
           console.error("Error fetching project details:", error);
           if (error.response && error.response.status === 404) {
-            // Emit event only if the error is 404
             this.$router.push({ name: 'notfound' });
           }
         });

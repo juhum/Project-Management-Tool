@@ -77,7 +77,7 @@
       </div>
       <div v-else>
         <p>Loading project details...</p>
-        <b-spinner label="Loading..."></b-spinner>
+        <div class="loading"></div>
       </div>
     <Footer />
   </div>
@@ -104,7 +104,7 @@ export default {
       users: [],
       currentUser: null,
       showOnlyUserProjects: false,
-      showForm: false, // Track form visibility
+      showForm: false,
       isEditing: false,
     };
   },
@@ -335,8 +335,6 @@ button {
 button:hover {
   background-color: #0056b3;
 }
-
-
 
 
 .project-manager__actions {

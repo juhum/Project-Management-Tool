@@ -36,6 +36,26 @@ section{
   background-color: black;
 }
 
+.loading {
+  margin: auto;
+  margin-top: 100px;
+  border: 10px solid #3498db;
+  border-radius: 80%;
+  border-top: 10px solid white;
+  width: 80px;
+  height: 80px;
+  animation: spinner 3s ease-in-out infinite;
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(60deg);
+  }
+  100% {
+    transform: rotate(420deg);
+  }
+}
+
 
 </style>
 <script>

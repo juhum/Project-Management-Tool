@@ -27,9 +27,13 @@ const routes = [
     component: LoginView
   },
   {
-    path: '/:pathMatch(.*)*',
+    path: '/404',
     name: 'notfound',
     component: NotFoundView
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: { name: 'notfound' }
   },
   {
   path: '/projects',

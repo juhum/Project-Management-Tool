@@ -4,7 +4,7 @@
       <Navbar />
       <h1>Projects</h1>
       </div>
-      <div v-if="Projects">
+      <!-- <div v-if="Projects"> -->
       <div class="project-manager__actions">
       <button v-if="$store.state.isAuthenticated" @click="cancelProject()">
         {{ showForm ? 'Cancel' : 'Add Project' }}
@@ -74,11 +74,11 @@
         </button>
       </div>
     </div>
-      </div>
+      <!-- </div>
       <div v-else>
         <p>Loading project details...</p>
         <div class="loading"></div>
-      </div>
+      </div> -->
     <Footer />
   </div>
 </template>

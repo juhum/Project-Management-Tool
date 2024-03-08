@@ -16,49 +16,82 @@
       <div>
         <h1>Tasks</h1>
         <!-- <div > v-if="Tasks" -->
-      <div class="task-manager__actions">
-      <button v-if="$store.state.isAuthenticated" @click="cancelTask()">
-        {{ showForm ? 'Cancel' : 'Add Task' }}
-      </button>
-      <label>
-        <input type="checkbox" v-model="showOnlyUserTasks"> Enrolled Tasks Only
-      </label>
-    </div>
+        <div class="task-manager__actions">
+          <button v-if="$store.state.isAuthenticated" @click="cancelTask()">
+            {{ showForm ? "Cancel" : "Add Task" }}
+          </button>
+          <label>
+            <input type="checkbox" v-model="showOnlyUserTasks" /> Enrolled Tasks
+            Only
+          </label>
+        </div>
 
-<form v-if="showForm" @submit.prevent="isEditing ? saveTask() : addTask()" class="task-form">
-    <input v-model="newTask.title" placeholder="Task Title" required />
-    <textarea v-model="newTask.description" placeholder="Task Description"></textarea>
-    <input type="date" v-model="newTask.deadline" placeholder="Deadline" required />
-<textarea v-model="newTask.status" placeholder="Task status"></textarea>
-    <select v-model="newTask.assigned_to" required>
-        <option value="" disabled>Select Assigned To</option>
-        <option v-for="user in users" :key="user.id" :value="user.id">{{ user.username }}</option>
-    </select>
+        <form
+          v-if="showForm"
+          @submit.prevent="isEditing ? saveTask() : addTask()"
+          class="task-form"
+        >
+          <input v-model="newTask.title" placeholder="Task Title" required />
+          <textarea
+            v-model="newTask.description"
+            placeholder="Task Description"
+          ></textarea>
+          <input
+            type="date"
+            v-model="newTask.deadline"
+            placeholder="Deadline"
+            required
+          />
+          <textarea
+            v-model="newTask.status"
+            placeholder="Task status"
+          ></textarea>
+          <select v-model="newTask.assigned_to" required>
+            <option value="" disabled>Select Assigned To</option>
+            <option v-for="user in users" :key="user.id" :value="user.id">
+              {{ user.username }}
+            </option>
+          </select>
 
-<select v-model="newTask.priority_level" required>
-  <option value="" disabled>Select Priority Level</option>
-  <option v-for="priorityLevel in priorityLevels" :key="priorityLevel.id" :value="priorityLevel.id">{{ priorityLevel.level }}</option>
-</select>
+          <select v-model="newTask.priority_level" required>
+            <option value="" disabled>Select Priority Level</option>
+            <option
+              v-for="priorityLevel in priorityLevels"
+              :key="priorityLevel.id"
+              :value="priorityLevel.id"
+            >
+              {{ priorityLevel.level }}
+            </option>
+          </select>
 
-    <button type="submit">{{ isEditing ? 'Save Task' : 'Add Task' }}</button>
-</form>
+          <button type="submit">
+            {{ isEditing ? "Save Task" : "Add Task" }}
+          </button>
+        </form>
 
-
-<div class="Task-grid">
-    <div v-for="task in filteredTasks" :key="task.id" class="task-item">
-        <button v-if="$store.state.isAuthenticated" @click="editTask(task)">Edit</button>
-        <button v-if="$store.state.isAuthenticated" @click="deleteTask(task)">Delete</button>
-        <h2>{{ task.title }}</h2>
-        <p>{{ task.description }}</p>
-        <p>Deadline: {{ task.deadline }}</p>
-        <p>Project: {{ task.project }}</p>
-        <p>Assigned To: {{ task.assigned_to }}</p>
-        <p>Priority Level: {{ task.priority_level }}</p>
-        <p>Status: {{ task.status }}</p>
-    </div>
-    </div>
+        <div class="Task-grid">
+          <div v-for="task in filteredTasks" :key="task.id" class="task-item">
+            <button v-if="$store.state.isAuthenticated" @click="editTask(task)">
+              Edit
+            </button>
+            <button
+              v-if="$store.state.isAuthenticated"
+              @click="deleteTask(task)"
+            >
+              Delete
+            </button>
+            <h2>{{ task.title }}</h2>
+            <p>{{ task.description }}</p>
+            <p>Deadline: {{ task.deadline }}</p>
+            <p>Assigned To: {{ getUserUsername(task.assigned_to) }}</p>
+            <p>
+              Priority Level: {{ getPriorityLevelName(task.priority_level) }}
+            </p>
+            <p>Status: {{ task.status }}</p>
+          </div>
+        </div>
       </div>
-      </div>
+    </div>
     <!-- </div>
     <div v-else>
       <p>Loading project details...</p>
@@ -83,15 +116,14 @@ export default {
       showForm: false,
       isEditing: false,
       newTask: {
-          title: '',
-          description: '',
-          project: '', 
-          assigned_to: '', 
-          priority_level: '', 
-          deadline: '', 
-          status: '' 
+        title: "",
+        description: "",
+        project: "",
+        assigned_to: "",
+        priority_level: "",
+        deadline: "",
+        status: "",
       },
-      filteredTasks: [],
       currentUser: null,
       showOnlyUserTasks: false,
       priorityLevels: [],
@@ -108,16 +140,16 @@ export default {
     this.getTasks();
     this.getPriorityLevels();
   },
-  computed: {
+computed: {
   filteredTasks() {
     if (this.showOnlyUserTasks) {
-      return this.filteredTasks.filter(task =>
-        task.team_members.includes(this.currentUser.id)
+      return this.Tasks.filter(task =>
+        task.assigned_to === this.currentUser.id
       );
     } else {
-      return this.filteredTasks;
+      return this.Tasks;
     }
-  }
+  },
 },
   methods: {
     getProjectDetails(projectId) {
@@ -130,7 +162,7 @@ export default {
         .catch((error) => {
           console.error("Error fetching project details:", error);
           if (error.response && error.response.status === 404) {
-            this.$router.push({ name: 'notfound' });
+            this.$router.push({ name: "notfound" });
           }
         });
     },
@@ -147,13 +179,14 @@ export default {
         })
         .then((response) => {
           this.users = response.data.results;
+          this.getCurrentUser();
         })
         .catch((error) => {
           console.error("Error fetching users:", error);
         });
     },
-    getPriorityLevels(){
-        axios
+    getPriorityLevels() {
+      axios
         .get(`/api/v1/priority-levels`)
         .then((response) => {
           this.priorityLevels = response.data;
@@ -162,15 +195,15 @@ export default {
           console.log(error);
         });
     },
-      resetForm() {
+    resetForm() {
       this.newTask = {
-          title: '',
-          description: '',
-          status: '',
-          team_members: []
+        title: "",
+        description: "",
+        status: "",
+        team_members: [],
       };
       this.taskToEdit = null;
-      this.showForm = !this.showForm 
+      this.showForm = !this.showForm;
       this.isEditing = false;
     },
     cancelTask() {
@@ -180,30 +213,29 @@ export default {
       axios
         .get(`/api/v1/tasks/?project=${this.projectId}`)
         .then((response) => {
-          this.filteredTasks = response.data;
+          this.Tasks = response.data;
         })
         .catch((error) => {
           console.log(error);
         });
     },
-addTask() {
-  // Include projectId in the newTask object
-  this.newTask.project = this.projectId;
+    addTask() {
+      this.newTask.project = this.projectId;
 
-  axios
-    .post("/api/v1/tasks/", this.newTask, {
-      headers: {
-        Authorization: `token ${localStorage.token}`,
-      },
-    })
-    .then((response) => {
-      this.Tasks.push(response.data);
-      this.resetForm();
-    })
-    .catch((error) => {
-      console.error("Error creating task:", error);
-    });
-},
+      axios
+        .post("/api/v1/tasks/", this.newTask, {
+          headers: {
+            Authorization: `token ${localStorage.token}`,
+          },
+        })
+        .then((response) => {
+          this.Tasks.push(response.data);
+          this.resetForm();
+        })
+        .catch((error) => {
+          console.error("Error creating task:", error);
+        });
+    },
     editTask(task) {
       this.isEditing = true;
       this.newTask.title = task.title;
@@ -236,11 +268,38 @@ addTask() {
       axios
         .delete(`/api/v1/tasks/${task.id}/`)
         .then(() => {
-          this.filteredTasks = this.filteredTasks.filter((t) => t.id !== task.id);
+          this.filteredTasks = this.filteredTasks.filter(
+            (t) => t.id !== task.id
+          );
           console.log("Task deleted successfully");
         })
         .catch((error) => {
           console.error("Error deleting task:", error);
+        });
+    },
+    getUserUsername(memberId) {
+      const user = this.users.find((user) => user.id === memberId);
+      return user ? user.username : "Unknown";
+    },
+    getPriorityLevelName(priorityLevelId) {
+      const level = this.priorityLevels.find(
+        (level) => level.id === priorityLevelId
+      );
+      return level ? level.level : "Unknown";
+    },
+    getCurrentUser() {
+      axios
+        .get("/api/v1/users/me", {
+          headers: {
+            Authorization: `token ${localStorage.token}`,
+          },
+        })
+        .then((response) => {
+          this.currentUser = response.data;
+          this.currentUser.id = response.data.id;
+        })
+        .catch((error) => {
+          console.log(error);
         });
     },
   },

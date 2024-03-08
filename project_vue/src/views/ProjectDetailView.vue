@@ -241,9 +241,12 @@ computed: {
       this.newTask.title = task.title;
       this.newTask.description = task.description;
       this.newTask.status = task.status;
-      this.newTask.team_members = task.team_members;
+      this.newTask.assigned_to = task.assigned_to;
+      this.newTask.deadline = task.deadline;
+      this.newTask.priority_level = task.priority_level;
+      this.newTask.project = task.project;
       this.taskToEdit = task;
-      this.showForm = true; // Show the form
+      this.showForm = true;
     },
     saveTask() {
       axios
@@ -253,12 +256,13 @@ computed: {
           },
         })
         .then((response) => {
-          const index = this.filteredTasks.findIndex(
+          const index = this.Tasks.findIndex(
             (task) => task.id === this.taskToEdit.id
           );
-          this.filteredTasks[index] = response.data;
+          this.Tasks[index] = response.data;
           this.resetForm();
           this.isEditing = false;
+          this.showForm = false;
         })
         .catch((error) => {
           console.error("Error updating task:", error);

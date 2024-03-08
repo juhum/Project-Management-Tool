@@ -185,7 +185,7 @@ export default {
         });
     },
     editProject(project) {
-       this.isEditing = true;
+      this.isEditing = true;
 
       this.newProject.title = project.title;
       this.newProject.description = project.description;

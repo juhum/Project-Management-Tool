@@ -268,7 +268,7 @@ computed: {
       axios
         .delete(`/api/v1/tasks/${task.id}/`)
         .then(() => {
-          this.filteredTasks = this.filteredTasks.filter(
+          this.Tasks = this.Tasks.filter(
             (t) => t.id !== task.id
           );
           console.log("Task deleted successfully");

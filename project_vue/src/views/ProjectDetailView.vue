@@ -105,6 +105,8 @@
 import axios from "axios";
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
   name: "ProjectPage",
@@ -221,7 +223,6 @@ computed: {
     },
     addTask() {
       this.newTask.project = this.projectId;
-
       axios
         .post("/api/v1/tasks/", this.newTask, {
           headers: {
@@ -231,9 +232,11 @@ computed: {
         .then((response) => {
           this.Tasks.push(response.data);
           this.resetForm();
+          toast.success('Task created successfully!');
         })
         .catch((error) => {
           console.error("Error creating task:", error);
+          toast.error('An error occurred while creating the task.');
         });
     },
     editTask(task) {
@@ -263,9 +266,11 @@ computed: {
           this.resetForm();
           this.isEditing = false;
           this.showForm = false;
+          toast.success('Task saved successfully!');
         })
         .catch((error) => {
           console.error("Error updating task:", error);
+          toast.error('An error occurred while editing the task.');
         });
     },
     deleteTask(task) {
@@ -276,9 +281,11 @@ computed: {
             (t) => t.id !== task.id
           );
           console.log("Task deleted successfully");
+          toast.success('Task deleted successfully!');
         })
         .catch((error) => {
           console.error("Error deleting task:", error);
+          toast.error('An error occurred while deleting the task.');
         });
     },
     getUserUsername(memberId) {

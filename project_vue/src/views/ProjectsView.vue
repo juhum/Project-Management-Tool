@@ -87,6 +87,9 @@
 import axios from "axios";
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+
 export default {
   name: "ProjectsView",
   data() {
@@ -179,23 +182,23 @@ export default {
         .then((response) => {
           this.Projects.push(response.data);
           this.resetForm();
+          toast.success('Project created successfully!');
         })
         .catch((error) => {
           console.error("Error creating project:", error);
+          toast.error('An error occurred while creating the task.');
         });
     },
     editProject(project) {
       this.isEditing = true;
-
       this.newProject.title = project.title;
       this.newProject.description = project.description;
       this.newProject.start_date = project.start_date;
       this.newProject.end_date = project.end_date;
       this.newProject.status = project.status;
       this.newProject.team_members = project.team_members;
-
       this.projectToEdit = project;
-      this.showForm = true; // Show the form
+      this.showForm = true;
       
     },
     saveProject() {
@@ -213,9 +216,11 @@ export default {
           this.resetForm();
           this.isEditing = false;
           this.showForm = false;
+          toast.success('Project saved successfully!');
         })
         .catch((error) => {
           console.error("Error updating Project:", error);
+          toast.error('An error occurred while editing the project.');
         });
     },
     deleteProject(project) {
@@ -224,9 +229,11 @@ export default {
         .then(() => {
           this.Projects = this.Projects.filter((p) => p.id !== project.id);
           console.log("Project deleted successfully");
+          toast.success('Project deleted successfully!');
         })
         .catch((error) => {
           console.error("Error deleting Project:", error);
+          toast.error('An error occurred while deleting the task.');
         });
     },
     getUserUsername(memberId) {

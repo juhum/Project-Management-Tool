@@ -55,7 +55,11 @@ class TaskView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        queryset = Task.objects.all()
+        project_id = request.query_params.get('project')
+        if project_id:
+            queryset = Task.objects.filter(project=project_id)
+        else:
+            queryset = Task.objects.all()
         serializer = TaskSerializer(queryset, many=True)
         return Response(serializer.data)
 

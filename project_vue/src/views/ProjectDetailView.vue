@@ -311,5 +311,100 @@ computed: {
 </script>
 
 <style scoped>
-/* Add styling as needed */
+.project-page {
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+.project-page h2,
+.project-page p {
+  margin: 10px 0;
+}
+
+.project-page ul {
+  margin-top: 5px;
+  padding-left: 20px;
+}
+
+.project-page .task-manager__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.project-page .task-manager__actions button {
+  margin-right: 20px;
+}
+
+.task-form {
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+.task-form input,
+.task-form textarea,
+.task-form select {
+  width: 97%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  resize: vertical;
+}
+
+.task-form button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.task-form button:hover {
+  background-color: #0056b3;
+}
+
+.Task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-gap: 20px;
+}
+
+.task-item {
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  border: 1px solid #ddd;
+}
+
+.task-item button {
+  margin-right: 10px;
+}
+
+.task-item h2,
+.task-item p {
+  margin: 10px 0;
+}
+
+button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
 </style>

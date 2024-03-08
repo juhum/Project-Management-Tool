@@ -41,6 +41,8 @@
 
 <script>
 import axios from "axios";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 export default {
   name: "Login",
   data() {
@@ -75,7 +77,12 @@ export default {
 
           localStorage.setItem("token", token);
 
-          this.$router.push("/");
+          toast.success("Logged in successfully!", {
+            autoClose: 500,
+            onClose: () => {
+              this.$router.push("/");
+            },
+          });
         })
         .catch((error) => {
           if (
@@ -91,6 +98,7 @@ export default {
             this.errors.push("Something went wrong. Please try again");
 
             console.log(JSON.stringify(error));
+            toast.error("Something went wrong.");
           }
         });
     },
@@ -166,7 +174,7 @@ export default {
   display: none;
 }
 
-footer{
+footer {
   display: none;
 }
 </style>

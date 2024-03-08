@@ -52,6 +52,8 @@
 
 <script>
 import axios from "axios";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 export default {
   name: "SignUpView",
   data() {
@@ -91,7 +93,12 @@ export default {
           .post("/api/v1/users/", formData)
           .then((response) => {
             this.registrationMessage = "Registration successful!";
+            toast.success("Account created successfully!", {
+            autoClose: 500,
+            onClose: () => {
             this.$router.push("/login");
+            }
+            })
           })
           .catch((error) => {
             if (error.response) {
@@ -104,6 +111,7 @@ export default {
             } else if (error.message) {
               this.errors.push("Something went wrong. Please try again");
               console.log(JSON.stringify(error));
+              toast.error("Something went wrong.");
             }
           });
       }

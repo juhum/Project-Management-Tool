@@ -14,6 +14,31 @@
         </li>
       </ul>
       <div>
+        <h1>Upload Files</h1>
+        <input
+          type="file"
+          ref="fileInput"
+          multiple
+          @change="handleFileChange"
+        />
+        <button @click="uploadFiles">Upload Files</button>
+      </div>
+      <h1>Files</h1>
+      <div v-if="files.length > 0">
+        <ul>
+          <li v-for="file in files" :key="file.id">
+            <button @click="downloadFile(file.id, file.file)">
+              {{ getFileName(file.file) }}
+            </button>
+            <!-- <a :href="downloadFile(file.id, file.file)" download>{{ getFileName(file.file) }}</a> -->
+            <button @click="downloadFile(file.file)">Download</button>
+          </li>
+        </ul>
+      </div>
+      <div v-else>
+        <p>No files found.</p>
+      </div>
+      <div>
         <h1>Tasks</h1>
         <!-- <div > v-if="Tasks" -->
         <div class="task-manager__actions">
@@ -105,8 +130,8 @@
 import axios from "axios";
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
-import { toast } from 'vue3-toastify';
-import 'vue3-toastify/dist/index.css';
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
 export default {
   name: "ProjectPage",
@@ -130,6 +155,7 @@ export default {
       showOnlyUserTasks: false,
       priorityLevels: [],
       Tasks: [],
+      files: [],
     };
   },
   components: {
@@ -141,18 +167,19 @@ export default {
     this.getUsers();
     this.getTasks();
     this.getPriorityLevels();
+    this.getFiles(this.projectId);
   },
-computed: {
-  filteredTasks() {
-    if (this.showOnlyUserTasks) {
-      return this.Tasks.filter(task =>
-        task.assigned_to === this.currentUser.id
-      );
-    } else {
-      return this.Tasks;
-    }
+  computed: {
+    filteredTasks() {
+      if (this.showOnlyUserTasks) {
+        return this.Tasks.filter(
+          (task) => task.assigned_to === this.currentUser.id
+        );
+      } else {
+        return this.Tasks;
+      }
+    },
   },
-},
   methods: {
     getProjectDetails(projectId) {
       axios
@@ -232,11 +259,11 @@ computed: {
         .then((response) => {
           this.Tasks.push(response.data);
           this.resetForm();
-          toast.success('Task created successfully!');
+          toast.success("Task created successfully!");
         })
         .catch((error) => {
           console.error("Error creating task:", error);
-          toast.error('An error occurred while creating the task.');
+          toast.error("An error occurred while creating the task.");
         });
     },
     editTask(task) {
@@ -266,26 +293,24 @@ computed: {
           this.resetForm();
           this.isEditing = false;
           this.showForm = false;
-          toast.success('Task saved successfully!');
+          toast.success("Task saved successfully!");
         })
         .catch((error) => {
           console.error("Error updating task:", error);
-          toast.error('An error occurred while editing the task.');
+          toast.error("An error occurred while editing the task.");
         });
     },
     deleteTask(task) {
       axios
         .delete(`/api/v1/tasks/${task.id}/`)
         .then(() => {
-          this.Tasks = this.Tasks.filter(
-            (t) => t.id !== task.id
-          );
+          this.Tasks = this.Tasks.filter((t) => t.id !== task.id);
           console.log("Task deleted successfully");
-          toast.success('Task deleted successfully!');
+          toast.success("Task deleted successfully!");
         })
         .catch((error) => {
           console.error("Error deleting task:", error);
-          toast.error('An error occurred while deleting the task.');
+          toast.error("An error occurred while deleting the task.");
         });
     },
     getUserUsername(memberId) {
@@ -313,6 +338,84 @@ computed: {
           console.log(error);
         });
     },
+    handleFileChange() {
+      this.selectedFiles = this.$refs.fileInput.files;
+    },
+    uploadFiles() {
+      const fileUploadData = new FormData();
+      for (let i = 0; i < this.selectedFiles.length; i++) {
+        fileUploadData.append("file", this.selectedFiles[i]);
+      }
+      fileUploadData.append("project", this.projectId);
+      fileUploadData.append("uploaded_by", this.currentUser.id);
+      const currentTime = new Date();
+      fileUploadData.append("uploaded_at", currentTime.toISOString());
+      axios
+        .post(`/api/v1/projects/${this.projectId}/upload/`, fileUploadData, {
+          headers: {
+            Authorization: `token ${localStorage.token}`,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          toast.success("Files uploaded successfully!");
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("An error occurred while uploading files.");
+        });
+    },
+    getFiles(projectId) {
+      axios
+        .get(`/api/v1/projects/${projectId}/files/`)
+        .then((response) => {
+          this.files = response.data;
+        })
+        .catch((error) => {
+          console.error("Error fetching files:", error);
+        });
+    },
+    getFileName(filePath) {
+      // Extracts the filename from the file path
+      const parts = filePath.split("/");
+      return parts[parts.length - 1];
+    },
+    downloadFile(fileId, filePath) {
+      // Construct the URL to download the file
+      const fullUrl = "http://localhost:8000" + filePath; // Modify this according to your actual hostname and port
+      const filename = this.getFileName(filePath);
+      console.log(filename);
+      // Create a link element
+      const link = document.createElement("a");
+      // Set the href attribute to the file URL
+      link.href = fullUrl;
+      // Set the download attribute to the file name
+      link.setAttribute("download", filename);
+      // Trigger a click event on the link to initiate the download
+      link.click();
+    },
+// downloadFile(url, title) {
+//   axios({
+//     method: 'get',
+//     url,
+//     responseType: 'arraybuffer',
+//   })
+//     .then(response => {
+//       this.forceDownload(response, title);
+//     })
+//     .catch(error => {
+//       console.error(error);
+//     });
+// },
+    forceDownload(response, title) {
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', title)
+      document.body.appendChild(link)
+      link.click()
+
+    },
   },
 };
 </script>
@@ -323,7 +426,7 @@ computed: {
   border-radius: 5px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
 .project-page h2,
@@ -352,7 +455,7 @@ computed: {
   border-radius: 5px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
 .task-form input,
@@ -389,7 +492,7 @@ computed: {
   background-color: #f8f9fa;
   border-radius: 5px;
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
   border: 1px solid #ddd;
 }
 

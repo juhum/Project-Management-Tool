@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Project, Task, File, Milestone, ProgressReport, Notification, PriorityLevel
-from .serializers import ProjectSerializer, TaskSerializer, FileSerializer, MilestoneSerializer, ProgressReportSerializer, NotificationSerializer, PriorityLevelSerializer
+from .models import Project, Task, File, Milestone, ProgressReport, Notification, PriorityLevel, ProjectFile
+from .serializers import ProjectSerializer, TaskSerializer, FileSerializer, MilestoneSerializer, ProgressReportSerializer, NotificationSerializer, PriorityLevelSerializer, ProjectFileSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 
@@ -309,3 +309,29 @@ class PriorityLevelDetailView(APIView):
         priority_level = self.get_object(pk)
         priority_level.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class FileUploadView(APIView):
+
+    def get(self, request, project_id, file_id):
+        try:
+            project_file = ProjectFile.objects.get(id=file_id, project_id=project_id)
+            serializer = ProjectFileSerializer(project_file)
+            return Response(serializer.data)
+        except ProjectFile.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    def delete(self, request, project_id, file_id):
+        try:
+            project_file = ProjectFile.objects.get(id=file_id, project_id=project_id)
+        except ProjectFile.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        project_file.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class FileListView(APIView):
+    def get(self, request, project_id):
+        project_files = ProjectFile.objects.filter(project_id=project_id)
+        serializer = ProjectFileSerializer(project_files, many=True)
+        return Response(serializer.data)
+    

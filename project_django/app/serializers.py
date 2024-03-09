@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Project, Task, File, Milestone, ProgressReport, Notification, PriorityLevel
+from .models import Project, Task, File, Milestone, ProgressReport, Notification, PriorityLevel, ProjectFile
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,4 +34,9 @@ class NotificationSerializer(serializers.ModelSerializer):
 class PriorityLevelSerializer(serializers.ModelSerializer):
     class Meta:
         model = PriorityLevel
+        fields = '__all__'
+
+class ProjectFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectFile
         fields = '__all__'

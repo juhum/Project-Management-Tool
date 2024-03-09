@@ -9,7 +9,6 @@ from .views import (
     PriorityLevelView, PriorityLevelDetailView,
     FileUploadView, FileListView
 )
-
 urlpatterns = [
     path('projects/', ProjectView.as_view(), name='project-list'),
     path('projects/<int:pk>/', ProjectDetailView.as_view(), name='project-detail'),

@@ -319,6 +319,13 @@ class FileUploadView(APIView):
             return Response(serializer.data)
         except ProjectFile.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+    def post(self, request, project_id):
+        serializer = ProjectFileSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(project_id=project_id, uploaded_by=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, project_id, file_id):
         try:

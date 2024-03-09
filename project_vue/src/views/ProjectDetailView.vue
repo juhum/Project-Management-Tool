@@ -27,11 +27,8 @@
       <div v-if="files.length > 0">
         <ul>
           <li v-for="file in files" :key="file.id">
-            <button @click="downloadFile(file.id, file.file)">
-              {{ getFileName(file.file) }}
-            </button>
-            <!-- <a :href="downloadFile(file.id, file.file)" download>{{ getFileName(file.file) }}</a> -->
-            <button @click="downloadFile(file.file)">Download</button>
+            {{ getFileName(file.file) }}
+            <button @click="downloadFile(file.id, file.file)">Download</button>
           </li>
         </ul>
       </div>
@@ -342,6 +339,10 @@ export default {
       this.selectedFiles = this.$refs.fileInput.files;
     },
     uploadFiles() {
+      if (!this.selectedFiles || this.selectedFiles.length === 0) {
+        toast.error("No files selected for upload");
+        return;
+      }
       const fileUploadData = new FormData();
       for (let i = 0; i < this.selectedFiles.length; i++) {
         fileUploadData.append("file", this.selectedFiles[i]);
@@ -359,6 +360,9 @@ export default {
         .then((response) => {
           console.log(response.data);
           toast.success("Files uploaded successfully!");
+          this.getFiles(this.projectId);
+          this.selectedFiles = [];
+          this.$refs.fileInput.value = "";
         })
         .catch((error) => {
           console.error(error);
@@ -376,45 +380,17 @@ export default {
         });
     },
     getFileName(filePath) {
-      // Extracts the filename from the file path
       const parts = filePath.split("/");
       return parts[parts.length - 1];
     },
     downloadFile(fileId, filePath) {
-      // Construct the URL to download the file
-      const fullUrl = "http://localhost:8000" + filePath; // Modify this according to your actual hostname and port
+      const fullUrl = "http://localhost:8000" + filePath;
       const filename = this.getFileName(filePath);
       console.log(filename);
-      // Create a link element
       const link = document.createElement("a");
-      // Set the href attribute to the file URL
       link.href = fullUrl;
-      // Set the download attribute to the file name
       link.setAttribute("download", filename);
-      // Trigger a click event on the link to initiate the download
       link.click();
-    },
-// downloadFile(url, title) {
-//   axios({
-//     method: 'get',
-//     url,
-//     responseType: 'arraybuffer',
-//   })
-//     .then(response => {
-//       this.forceDownload(response, title);
-//     })
-//     .catch(error => {
-//       console.error(error);
-//     });
-// },
-    forceDownload(response, title) {
-      const url = window.URL.createObjectURL(new Blob([response.data]))
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', title)
-      document.body.appendChild(link)
-      link.click()
-
     },
   },
 };

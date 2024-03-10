@@ -336,7 +336,7 @@ export default {
           console.log(error);
         });
     },
-    handleFileChange() { // problem multiple files
+    handleFileChange() {
       this.selectedFiles = this.$refs.fileInput.files;
     },
     uploadFiles() {

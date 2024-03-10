@@ -383,15 +383,26 @@ export default {
       const parts = filePath.split("/");
       return parts[parts.length - 1];
     },
-    downloadFile(fileId, filePath) {
-      const fullUrl = "http://localhost:8000" + filePath;
-      const filename = this.getFileName(filePath);
-      console.log(filename);
-      const link = document.createElement("a");
-      link.href = fullUrl;
-      link.setAttribute("download", filename);
-      link.click();
-    },
+    async downloadFile(fileId, filePath) {
+    try {
+        const filename = this.getFileName(filePath);
+        const response = await axios.get(filePath, {
+            responseType: 'blob'
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+        toast.success("File downloaded !");
+    } catch (error) {
+        console.error('Error downloading file:', error);
+        toast.error("An error occurred while downloading file.");
+    }
+}
   },
 };
 </script>

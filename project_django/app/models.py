@@ -53,9 +53,13 @@ class Notification(models.Model):
     read = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
 
+
+def project_file_path(instance, filename):
+    return f'project_files/project_{instance.project.id}/{filename}'
+
 class ProjectFile(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='project_files/')
+    file = models.FileField(upload_to=project_file_path)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 

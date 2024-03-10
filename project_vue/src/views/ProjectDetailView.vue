@@ -29,6 +29,7 @@
           <li v-for="file in files" :key="file.id">
             {{ getFileName(file.file) }}
             <button @click="downloadFile(file.id, file.file)">Download</button>
+            <button @click="deleteFile(file.id)">Delete</button>
           </li>
         </ul>
       </div>
@@ -335,7 +336,7 @@ export default {
           console.log(error);
         });
     },
-    handleFileChange() {
+    handleFileChange() { // problem multiple files
       this.selectedFiles = this.$refs.fileInput.files;
     },
     uploadFiles() {
@@ -384,25 +385,38 @@ export default {
       return parts[parts.length - 1];
     },
     async downloadFile(fileId, filePath) {
-    try {
+      try {
         const filename = this.getFileName(filePath);
         const response = await axios.get(filePath, {
-            responseType: 'blob'
+          responseType: "blob",
         });
 
         const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
-        link.setAttribute('download', filename);
+        link.setAttribute("download", filename);
         link.click();
         link.remove();
         window.URL.revokeObjectURL(url);
         toast.success("File downloaded !");
-    } catch (error) {
-        console.error('Error downloading file:', error);
+      } catch (error) {
+        console.error("Error downloading file:", error);
         toast.error("An error occurred while downloading file.");
-    }
-}
+      }
+    },
+    deleteFile(fileId) {
+      axios
+        .delete(`/api/v1/projects/${this.projectId}/files/${fileId}/`)
+        .then(() => {
+          this.files = this.files.filter((f) => f.id !== fileId);
+          console.log("File deleted successfully");
+          toast.success("File deleted successfully!");
+        })
+        .catch((error) => {
+          console.error("Error deleting file:", error);
+          toast.error("An error occurred while deleting the file.");
+        });
+    },
   },
 };
 </script>

@@ -6,6 +6,7 @@ from .models import Project, Task, File, Milestone, ProgressReport, Notification
 from .serializers import ProjectSerializer, TaskSerializer, FileSerializer, MilestoneSerializer, ProgressReportSerializer, NotificationSerializer, PriorityLevelSerializer, ProjectFileSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
+import os
 
 class ProjectView(APIView):
     permission_classes = [IsAuthenticated]
@@ -332,8 +333,15 @@ class FileUploadView(APIView):
             project_file = ProjectFile.objects.get(id=file_id, project_id=project_id)
         except ProjectFile.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+        file_path = os.path.join("media", str(project_file.file))
+        print(file_path)
+        if os.path.exists(file_path):
+            os.remove(file_path)
         
+        # Delete the database entry
         project_file.delete()
+
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class FileListView(APIView):

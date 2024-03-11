@@ -7,7 +7,8 @@ from .views import (
     ProgressReportView, ProgressReportDetailView,
     NotificationView, NotificationDetailView,
     PriorityLevelView, PriorityLevelDetailView,
-    FileUploadView, FileListView
+    FileUploadView, FileListView,
+    StatusListView, StatusDetailView,
 )
 urlpatterns = [
     path('projects/', ProjectView.as_view(), name='project-list'),
@@ -27,4 +28,6 @@ urlpatterns = [
     path('projects/<int:project_id>/upload/', FileUploadView.as_view(), name='upload_file'),
     path('projects/<int:project_id>/files/', FileListView.as_view(), name='list_files'),
     path('projects/<int:project_id>/files/<int:file_id>/', FileUploadView.as_view(), name='file-detail'),
+    path('statuses/', StatusListView.as_view(), name='status-list'),
+    path('statuses/<int:pk>/', StatusDetailView.as_view(), name='status-detail'),
 ]

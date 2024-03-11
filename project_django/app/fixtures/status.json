@@ -1,0 +1,44 @@
+[
+    {
+        "model": "app.Status",
+        "pk": 1,
+        "fields": {
+            "name": "New"
+        }
+    },
+    {
+        "model": "app.Status",
+        "pk": 2,
+        "fields": {
+            "name": "Open"
+        }
+    },
+    {
+        "model": "app.Status",
+        "pk": 3,
+        "fields": {
+            "name": "In Progress"
+        }
+    },
+    {
+        "model": "app.Status",
+        "pk": 4,
+        "fields": {
+            "name": "Completed"
+        }
+    },
+    {
+        "model": "app.Status",
+        "pk": 5,
+        "fields": {
+            "name": "On Hold"
+        }
+    },
+    {
+        "model": "app.Status",
+        "pk": 6,
+        "fields": {
+            "name": "Cancelled"
+        }
+    }
+]

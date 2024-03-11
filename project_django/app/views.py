@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Project, Task, File, Milestone, ProgressReport, Notification, PriorityLevel, ProjectFile
-from .serializers import ProjectSerializer, TaskSerializer, FileSerializer, MilestoneSerializer, ProgressReportSerializer, NotificationSerializer, PriorityLevelSerializer, ProjectFileSerializer
+from .models import Project, Task, File, Milestone, ProgressReport, Notification, PriorityLevel, ProjectFile, Status
+from .serializers import ProjectSerializer, TaskSerializer, FileSerializer, MilestoneSerializer, ProgressReportSerializer, NotificationSerializer, PriorityLevelSerializer, ProjectFileSerializer, StatusSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 import os
@@ -292,6 +292,7 @@ class PriorityLevelDetailView(APIView):
         return Response(serializer.data)
     
 class FileUploadView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, project_id, file_id):
         try:
@@ -330,8 +331,32 @@ class FileUploadView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class FileListView(APIView):
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request, project_id):
         project_files = ProjectFile.objects.filter(project_id=project_id)
         serializer = ProjectFileSerializer(project_files, many=True)
         return Response(serializer.data)
     
+
+class StatusListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        queryset = Status.objects.all()
+        serializer = StatusSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+class StatusDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        try:
+            return Status.objects.get(pk=pk)
+        except Status.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, pk, format=None):
+        status_instance = self.get_object(pk)
+        serializer = StatusSerializer(status_instance)
+        return Response(serializer.data)

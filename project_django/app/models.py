@@ -1,12 +1,19 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
+class Status(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+    
 class Project(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     start_date = models.DateField()
     end_date = models.DateField()
-    status = models.CharField(max_length=50)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE)
     team_members = models.ManyToManyField(User)  # Use Djoser's User model
     # not sure if these methods needed later
     def __str__(self):
@@ -25,7 +32,7 @@ class Task(models.Model):
     assigned_to = models.ForeignKey(User, on_delete=models.CASCADE)  # Use Djoser's User model
     priority_level = models.ForeignKey(PriorityLevel, on_delete=models.CASCADE)
     deadline = models.DateField()
-    status = models.CharField(max_length=50)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE)
 
 class File(models.Model):
     file = models.FileField(upload_to='files/')
@@ -63,9 +70,4 @@ class ProjectFile(models.Model):
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
-class Status(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
 

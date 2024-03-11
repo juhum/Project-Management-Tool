@@ -3,18 +3,23 @@
     <div class="project-manager__header">
       <Navbar />
       <h1>Projects</h1>
-      </div>
-      <!-- <div v-if="Projects"> -->
-      <div class="project-manager__actions">
+    </div>
+    <!-- <div v-if="Projects"> -->
+    <div class="project-manager__actions">
       <button v-if="$store.state.isAuthenticated" @click="cancelProject()">
-        {{ showForm ? 'Cancel' : 'Add Project' }}
+        {{ showForm ? "Cancel" : "Add Project" }}
       </button>
       <label>
-        <input type="checkbox" v-model="showOnlyUserProjects"> Enrolled Projects Only
+        <input type="checkbox" v-model="showOnlyUserProjects" /> Enrolled
+        Projects Only
       </label>
     </div>
 
-    <form v-if="showForm" @submit.prevent="isEditing ? saveProject() : addProject()" class="project-form">
+    <form
+      v-if="showForm"
+      @submit.prevent="isEditing ? saveProject() : addProject()"
+      class="project-form"
+    >
       <input v-model="newProject.title" placeholder="Project Title" required />
       <textarea
         v-model="newProject.description"
@@ -32,20 +37,35 @@
         placeholder="End Date"
         required
       />
-      <input v-model="newProject.status" placeholder="Status" required />
+<select v-model="newProject.status" required>
+  <option value="" disabled selected>Select Status</option>
+  <option v-for="status in statuses" :key="status.id" :value="status.id">{{ status.name }}</option>
+</select>
+
       <div class="user-list" v-if="users.length > 0">
         <div v-for="user in users" :key="user.id">
-          <input type="checkbox" :id="'user_' + user.id" v-model="newProject.team_members" :value="user.id">
+          <input
+            type="checkbox"
+            :id="'user_' + user.id"
+            v-model="newProject.team_members"
+            :value="user.id"
+          />
           <label :for="'user_' + user.id">{{ user.username }}</label>
         </div>
       </div>
       <div v-else>No users available.</div>
 
-      <button type="submit">{{ isEditing ? 'Save Project' : 'Add Project' }}</button>
+      <button type="submit">
+        {{ isEditing ? "Save Project" : "Add Project" }}
+      </button>
     </form>
 
     <div class="project-grid">
-      <div v-for="project in filteredProjects" :key="project.id" class="project-item">
+      <div
+        v-for="project in filteredProjects"
+        :key="project.id"
+        class="project-item"
+      >
         <button
           v-if="$store.state.isAuthenticated"
           @click="editProject(project)"
@@ -62,19 +82,22 @@
         <p>{{ project.description }}</p>
         <p>Start Date: {{ project.start_date }}</p>
         <p>End Date: {{ project.end_date }}</p>
-        <p>Status: {{ project.status }}</p>
+        <p>Status: {{ getStatusName(project.status) }}</p>
         <p>Team Members:</p>
         <ul>
           <li v-for="memberId in project.team_members" :key="memberId">
             {{ getUserUsername(memberId) }}
           </li>
         </ul>
-        <button v-if="$store.state.isAuthenticated" @click="viewProjectDetails(project.id)">
+        <button
+          v-if="$store.state.isAuthenticated"
+          @click="viewProjectDetails(project.id)"
+        >
           Details
         </button>
       </div>
     </div>
-      <!-- </div>
+    <!-- </div>
       <div v-else>
         <p>Loading project details...</p>
         <div class="loading"></div>
@@ -87,8 +110,8 @@
 import axios from "axios";
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
-import { toast } from 'vue3-toastify';
-import 'vue3-toastify/dist/index.css';
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
 export default {
   name: "ProjectsView",
@@ -109,6 +132,7 @@ export default {
       showOnlyUserProjects: false,
       showForm: false,
       isEditing: false,
+      statuses: [],
     };
   },
   components: {
@@ -119,17 +143,18 @@ export default {
     this.getProjects();
     document.title = "Projects";
     this.getUsers();
+    this.getStatuses();
   },
   computed: {
     filteredProjects() {
       if (this.showOnlyUserProjects) {
-        return this.Projects.filter(project =>
+        return this.Projects.filter((project) =>
           project.team_members.includes(this.currentUser.id)
         );
       } else {
         return this.Projects;
       }
-    }
+    },
   },
   methods: {
     getProjects() {
@@ -157,21 +182,21 @@ export default {
           console.log(error);
         });
     },
-    getCurrentUser(){
+    getCurrentUser() {
       axios
-    .get("/api/v1/users/me", {
-      headers: {
-        Authorization: `token ${localStorage.token}`,
-      },
-    })
-    .then((response) => {
-      this.currentUser = response.data;
-      this.currentUser.id = response.data.id;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-},
+        .get("/api/v1/users/me", {
+          headers: {
+            Authorization: `token ${localStorage.token}`,
+          },
+        })
+        .then((response) => {
+          this.currentUser = response.data;
+          this.currentUser.id = response.data.id;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     addProject() {
       axios
         .post("/api/v1/projects/", this.newProject, {
@@ -182,11 +207,11 @@ export default {
         .then((response) => {
           this.Projects.push(response.data);
           this.resetForm();
-          toast.success('Project created successfully!');
+          toast.success("Project created successfully!");
         })
         .catch((error) => {
           console.error("Error creating project:", error);
-          toast.error('An error occurred while creating the task.');
+          toast.error("An error occurred while creating the task.");
         });
     },
     editProject(project) {
@@ -199,7 +224,6 @@ export default {
       this.newProject.team_members = project.team_members;
       this.projectToEdit = project;
       this.showForm = true;
-      
     },
     saveProject() {
       axios
@@ -216,11 +240,11 @@ export default {
           this.resetForm();
           this.isEditing = false;
           this.showForm = false;
-          toast.success('Project saved successfully!');
+          toast.success("Project saved successfully!");
         })
         .catch((error) => {
           console.error("Error updating Project:", error);
-          toast.error('An error occurred while editing the project.');
+          toast.error("An error occurred while editing the project.");
         });
     },
     deleteProject(project) {
@@ -229,11 +253,11 @@ export default {
         .then(() => {
           this.Projects = this.Projects.filter((p) => p.id !== project.id);
           console.log("Project deleted successfully");
-          toast.success('Project deleted successfully!');
+          toast.success("Project deleted successfully!");
         })
         .catch((error) => {
           console.error("Error deleting Project:", error);
-          toast.error('An error occurred while deleting the task.');
+          toast.error("An error occurred while deleting the task.");
         });
     },
     getUserUsername(memberId) {
@@ -250,14 +274,36 @@ export default {
         team_members: [],
       };
       this.projectToEdit = null;
-      this.showForm = !this.showForm 
+      this.showForm = !this.showForm;
       this.isEditing = false;
     },
     cancelProject() {
       this.resetForm();
     },
-    viewProjectDetails(projectId){
-      this.$router.push({ name: 'ProjectDetailView', params: { projectId: projectId } });
+    viewProjectDetails(projectId) {
+      this.$router.push({
+        name: "ProjectDetailView",
+        params: { projectId: projectId },
+      });
+    },
+    getStatuses() {
+      axios
+        .get("/api/v1/statuses/", {
+          headers: {
+            Authorization: `token ${localStorage.token}`,
+          },
+        })
+        .then((response) => {
+          this.statuses = response.data;  
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getStatusName(statusId) {
+      const status = this.statuses.find((status) => status.id === statusId);
+      return status ? status.name : "Unknown";
     }
   },
 };
@@ -281,7 +327,7 @@ export default {
   border-radius: 5px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
 .project-form input,
@@ -317,7 +363,7 @@ export default {
   background-color: #f8f9fa;
   border-radius: 5px;
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
   border: 1px solid #ddd;
 }
 
@@ -343,7 +389,6 @@ button:hover {
   background-color: #0056b3;
 }
 
-
 .project-manager__actions {
   display: flex;
   justify-content: space-between;
@@ -355,7 +400,7 @@ button:hover {
 }
 
 .user-list {
-  max-height: 80px; 
+  max-height: 80px;
   overflow-y: auto;
   width: 30%;
   padding: 0;

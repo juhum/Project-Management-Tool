@@ -6,7 +6,7 @@
       <p>{{ project.description }}</p>
       <p>Start Date: {{ project.start_date }}</p>
       <p>End Date: {{ project.end_date }}</p>
-      <p>Status: {{ project.status }}</p>
+      <p>Status: {{ getStatusName(project.status) }}</p>
       <p>Team Members:</p>
       <ul>
         <li v-for="memberId in project.team_members" :key="memberId">
@@ -65,19 +65,25 @@
             placeholder="Deadline"
             required
           />
-          <textarea
-            v-model="newTask.status"
-            placeholder="Task status"
-          ></textarea>
+          <select v-model="newTask.status" required>
+            <option value="" disabled selected>Select Status</option>
+            <option
+              v-for="status in statuses"
+              :key="status.id"
+              :value="status.id"
+            >
+              {{ status.name }}
+            </option>
+          </select>
           <select v-model="newTask.assigned_to" required>
-            <option value="" disabled>Select Assigned To</option>
+            <option value="" disabled selected>Select Assigned To</option>
             <option v-for="user in users" :key="user.id" :value="user.id">
               {{ user.username }}
             </option>
           </select>
 
           <select v-model="newTask.priority_level" required>
-            <option value="" disabled>Select Priority Level</option>
+            <option value="" disabled selected>Select Priority Level</option>
             <option
               v-for="priorityLevel in priorityLevels"
               :key="priorityLevel.id"
@@ -110,7 +116,7 @@
             <p>
               Priority Level: {{ getPriorityLevelName(task.priority_level) }}
             </p>
-            <p>Status: {{ task.status }}</p>
+            <p>Status: {{ getStatusName(task.status) }}</p>
           </div>
         </div>
       </div>
@@ -154,6 +160,7 @@ export default {
       priorityLevels: [],
       Tasks: [],
       files: [],
+      statuses: [],
     };
   },
   components: {
@@ -166,6 +173,7 @@ export default {
     this.getTasks();
     this.getPriorityLevels();
     this.getFiles(this.projectId);
+    this.getStatuses();
   },
   computed: {
     filteredTasks() {
@@ -416,6 +424,25 @@ export default {
           console.error("Error deleting file:", error);
           toast.error("An error occurred while deleting the file.");
         });
+    },
+    getStatuses() {
+      axios
+        .get("/api/v1/statuses/", {
+          headers: {
+            Authorization: `token ${localStorage.token}`,
+          },
+        })
+        .then((response) => {
+          this.statuses = response.data;
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getStatusName(statusId) {
+      const status = this.statuses.find((status) => status.id === statusId);
+      return status ? status.name : "Unknown";
     },
   },
 };

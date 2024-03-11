@@ -1,0 +1,23 @@
+[
+    {
+        "model": "app.PriorityLevel", 
+        "pk": 1, 
+        "fields": {
+            "level": "High"
+        }
+    },
+    {
+        "model": "app.PriorityLevel", 
+        "pk": 2, 
+        "fields": {
+            "level": "Medium"
+        }
+    },
+    {
+        "model": "app.PriorityLevel", 
+        "pk": 3, 
+        "fields": {
+            "level": "Low"
+        }
+    }
+]

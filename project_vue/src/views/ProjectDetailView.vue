@@ -70,7 +70,7 @@
             required
           />
           <select v-model="newTask.status" required>
-            <option value="" disabled selected>Select Status</option>
+            <option value="" disabled selected hidden>Select Status</option>
             <option
               v-for="status in statuses"
               :key="status.id"
@@ -80,14 +80,14 @@
             </option>
           </select>
           <select v-model="newTask.assigned_to" required>
-            <option value="" disabled selected>Select Assigned To</option>
+            <option value="" disabled selected hidden>Select Assigned To</option>
             <option v-for="user in users" :key="user.id" :value="user.id">
               {{ user.username }}
             </option>
           </select>
 
           <select v-model="newTask.priority_level" required>
-            <option value="" disabled selected>Select Priority Level</option>
+            <option value="" disabled selected hidden>Select Priority Level</option>
             <option
               v-for="priorityLevel in priorityLevels"
               :key="priorityLevel.id"
@@ -238,8 +238,11 @@ export default {
       this.newTask = {
         title: "",
         description: "",
+        project: "",
+        assigned_to: "",
+        priority_level: "",
+        deadline: "",
         status: "",
-        team_members: [],
       };
       this.taskToEdit = null;
       this.showForm = !this.showForm;
@@ -371,7 +374,6 @@ export default {
           },
         })
         .then((response) => {
-          console.log(response.data);
           toast.success("Files uploaded successfully!");
           this.getFiles(this.projectId);
           this.selectedFiles = [];
@@ -438,7 +440,6 @@ export default {
         })
         .then((response) => {
           this.statuses = response.data;
-          console.log(response.data);
         })
         .catch((error) => {
           console.log(error);

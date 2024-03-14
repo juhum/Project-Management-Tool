@@ -10,11 +10,11 @@
         {{ showForm ? "Cancel" : "Add Project" }}
       </button>
       <select class="status-filter" v-model="selectedStatus">
-  <option value="">All Statuses</option>
-  <option v-for="status in statuses" :key="status.id" :value="status.id">
-    {{ status.name }}
-  </option>
-</select>
+        <option value="">All Statuses</option>
+        <option v-for="status in statuses" :key="status.id" :value="status.id">
+          {{ status.name }}
+        </option>
+      </select>
       <label>
         <input type="checkbox" v-model="showOnlyUserProjects" /> Enrolled
         Projects Only
@@ -43,10 +43,12 @@
         placeholder="End Date"
         required
       />
-<select v-model="newProject.status" required>
-  <option value="" disabled selected>Select Status</option>
-  <option v-for="status in statuses" :key="status.id" :value="status.id">{{ status.name }}</option>
-</select>
+      <select v-model="newProject.status" required>
+        <option value="" disabled selected>Select Status</option>
+        <option v-for="status in statuses" :key="status.id" :value="status.id">
+          {{ status.name }}
+        </option>
+      </select>
 
       <div class="user-list" v-if="users.length > 0">
         <div v-for="user in users" :key="user.id">
@@ -139,7 +141,7 @@ export default {
       showForm: false,
       isEditing: false,
       statuses: [],
-      selectedStatus: '',
+      selectedStatus: "",
     };
   },
   components: {
@@ -153,17 +155,20 @@ export default {
     this.getStatuses();
   },
   computed: {
-filteredProjects() {
-  if (this.showOnlyUserProjects) {
-    return this.Projects.filter((project) =>
-      project.team_members.includes(this.currentUser.id) &&
-      (this.selectedStatus === "" || project.status === this.selectedStatus)
-    );
-  } else {
-    return this.Projects.filter((project) =>
-      this.selectedStatus === "" || project.status === this.selectedStatus
-    );
-  }
+    filteredProjects() {
+      if (this.showOnlyUserProjects) {
+        return this.Projects.filter(
+          (project) =>
+            project.team_members.includes(this.currentUser.id) &&
+            (this.selectedStatus === "" ||
+              project.status === this.selectedStatus)
+        );
+      } else {
+        return this.Projects.filter(
+          (project) =>
+            this.selectedStatus === "" || project.status === this.selectedStatus
+        );
+      }
     },
   },
   methods: {
@@ -304,7 +309,7 @@ filteredProjects() {
           },
         })
         .then((response) => {
-          this.statuses = response.data;  
+          this.statuses = response.data;
         })
         .catch((error) => {
           console.log(error);
@@ -313,7 +318,7 @@ filteredProjects() {
     getStatusName(statusId) {
       const status = this.statuses.find((status) => status.id === statusId);
       return status ? status.name : "Unknown";
-    }
+    },
   },
 };
 </script>
@@ -348,7 +353,7 @@ filteredProjects() {
   border-radius: 3px;
   resize: vertical;
 }
-.project-form input[type="date"]{
+.project-form input[type="date"] {
   resize: none;
 }
 
@@ -440,15 +445,12 @@ button:hover {
   resize: vertical;
 }
 
-.status-filter{
+.status-filter {
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ddd;
   border-radius: 3px;
   resize: vertical;
 }
-
-
-
 </style>
 

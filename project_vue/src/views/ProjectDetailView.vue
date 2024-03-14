@@ -47,6 +47,16 @@
           <button v-if="$store.state.isAuthenticated" @click="cancelTask()">
             {{ showForm ? "Cancel" : "Add Task" }}
           </button>
+          <select class="status-filter" v-model="selectedStatus">
+            <option value="">All Statuses</option>
+            <option
+              v-for="status in statuses"
+              :key="status.id"
+              :value="status.id"
+            >
+              {{ status.name }}
+            </option>
+          </select>
           <label>
             <input type="checkbox" v-model="showOnlyUserTasks" /> Enrolled Tasks
             Only
@@ -80,14 +90,18 @@
             </option>
           </select>
           <select v-model="newTask.assigned_to" required>
-            <option value="" disabled selected hidden>Select Assigned To</option>
+            <option value="" disabled selected hidden>
+              Select Assigned To
+            </option>
             <option v-for="user in users" :key="user.id" :value="user.id">
               {{ user.username }}
             </option>
           </select>
 
           <select v-model="newTask.priority_level" required>
-            <option value="" disabled selected hidden>Select Priority Level</option>
+            <option value="" disabled selected hidden>
+              Select Priority Level
+            </option>
             <option
               v-for="priorityLevel in priorityLevels"
               :key="priorityLevel.id"
@@ -165,6 +179,7 @@ export default {
       Tasks: [],
       files: [],
       statuses: [],
+      selectedStatus: "",
     };
   },
   components: {
@@ -183,10 +198,15 @@ export default {
     filteredTasks() {
       if (this.showOnlyUserTasks) {
         return this.Tasks.filter(
-          (task) => task.assigned_to === this.currentUser.id
+          (task) =>
+            task.assigned_to === this.currentUser.id &&
+            (this.selectedStatus === "" || task.status === this.selectedStatus)
         );
       } else {
-        return this.Tasks;
+        return this.Tasks.filter(
+          (task) =>
+            this.selectedStatus === "" || task.status === this.selectedStatus
+        );
       }
     },
   },
@@ -502,7 +522,7 @@ export default {
   resize: vertical;
 }
 
-.task-form input[type="date"]{
+.task-form input[type="date"] {
   resize: none;
 }
 
@@ -557,6 +577,14 @@ button:hover {
 
 .file-btn {
   margin: 10px;
+}
+
+.status-filter {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  resize: vertical;
 }
 
 @media (max-width: 414px) {

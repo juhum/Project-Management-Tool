@@ -26,7 +26,7 @@
         placeholder="Project Description"
       ></textarea>
       <input
-        type="date"
+        type="text"
         v-model="newProject.start_date"
         placeholder="Start Date"
         required
@@ -295,7 +295,6 @@ export default {
         })
         .then((response) => {
           this.statuses = response.data;  
-          console.log(response.data);
         })
         .catch((error) => {
           console.log(error);
@@ -338,6 +337,9 @@ export default {
   border: 1px solid #ddd;
   border-radius: 3px;
   resize: vertical;
+}
+.project-form input[type="date"]{
+  resize: none;
 }
 
 .project-form button {
@@ -419,7 +421,7 @@ button:hover {
   margin: 0;
 }
 
-.project-form select {
+.project select {
   width: 97%;
   padding: 10px;
   margin-bottom: 10px;

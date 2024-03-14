@@ -502,6 +502,10 @@ export default {
   resize: vertical;
 }
 
+.task-form input[type="date"]{
+  resize: none;
+}
+
 .task-form button {
   background-color: #007bff;
   color: #fff;

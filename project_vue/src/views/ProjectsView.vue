@@ -9,6 +9,12 @@
       <button v-if="$store.state.isAuthenticated" @click="cancelProject()">
         {{ showForm ? "Cancel" : "Add Project" }}
       </button>
+      <select class="status-filter" v-model="selectedStatus">
+  <option value="">All Statuses</option>
+  <option v-for="status in statuses" :key="status.id" :value="status.id">
+    {{ status.name }}
+  </option>
+</select>
       <label>
         <input type="checkbox" v-model="showOnlyUserProjects" /> Enrolled
         Projects Only
@@ -26,7 +32,7 @@
         placeholder="Project Description"
       ></textarea>
       <input
-        type="text"
+        type="date"
         v-model="newProject.start_date"
         placeholder="Start Date"
         required
@@ -133,6 +139,7 @@ export default {
       showForm: false,
       isEditing: false,
       statuses: [],
+      selectedStatus: '',
     };
   },
   components: {
@@ -146,14 +153,17 @@ export default {
     this.getStatuses();
   },
   computed: {
-    filteredProjects() {
-      if (this.showOnlyUserProjects) {
-        return this.Projects.filter((project) =>
-          project.team_members.includes(this.currentUser.id)
-        );
-      } else {
-        return this.Projects;
-      }
+filteredProjects() {
+  if (this.showOnlyUserProjects) {
+    return this.Projects.filter((project) =>
+      project.team_members.includes(this.currentUser.id) &&
+      (this.selectedStatus === "" || project.status === this.selectedStatus)
+    );
+  } else {
+    return this.Projects.filter((project) =>
+      this.selectedStatus === "" || project.status === this.selectedStatus
+    );
+  }
     },
   },
   methods: {
@@ -421,7 +431,7 @@ button:hover {
   margin: 0;
 }
 
-.project select {
+.project-form select {
   width: 97%;
   padding: 10px;
   margin-bottom: 10px;
@@ -429,5 +439,16 @@ button:hover {
   border-radius: 3px;
   resize: vertical;
 }
+
+.status-filter{
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  resize: vertical;
+}
+
+
+
 </style>
 

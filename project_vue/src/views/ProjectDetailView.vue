@@ -21,15 +21,19 @@
           multiple
           @change="handleFileChange"
         />
-        <button @click="uploadFiles">Upload Files</button>
+        <button class="file-btn" @click="uploadFiles">Upload Files</button>
       </div>
       <h1>Files</h1>
       <div v-if="files.length > 0">
         <ul>
           <li v-for="file in files" :key="file.id">
             {{ getFileName(file.file) }}
-            <button @click="downloadFile(file.id, file.file)">Download</button>
-            <button @click="deleteFile(file.id)">Delete</button>
+            <button class="file-btn" @click="downloadFile(file.id, file.file)">
+              Download
+            </button>
+            <button class="file-btn" @click="deleteFile(file.id)">
+              Delete
+            </button>
           </li>
         </ul>
       </div>
@@ -544,5 +548,17 @@ button {
 
 button:hover {
   background-color: #0056b3;
+}
+
+.file-btn {
+  margin: 10px;
+}
+
+@media (max-width: 414px) {
+  .project-page {
+    width: calc(100% - 10px);
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 </style>

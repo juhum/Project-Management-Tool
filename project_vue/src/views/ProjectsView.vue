@@ -418,5 +418,14 @@ button:hover {
 .user-list input[type="checkbox"] {
   margin: 0;
 }
+
+.project-form select {
+  width: 97%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  resize: vertical;
+}
 </style>
 

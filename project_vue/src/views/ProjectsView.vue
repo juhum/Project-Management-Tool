@@ -67,7 +67,8 @@
         {{ isEditing ? "Save Project" : "Add Project" }}
       </button>
     </form>
-    <PieChart ref="pieChart" />
+    <PieChart ref="pieChart" :showOnlyUserProjects="showOnlyUserProjects" />
+
 
     <div class="project-grid">
       <div
@@ -170,6 +171,13 @@ export default {
           (project) =>
             this.selectedStatus === "" || project.status === this.selectedStatus
         );
+      }
+    },
+  },
+    watch: {
+    showOnlyUserProjects(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.$refs.pieChart.loadData();
       }
     },
   },

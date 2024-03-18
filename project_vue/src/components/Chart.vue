@@ -3,52 +3,70 @@
 </template>
 
 <script>
-import { Pie } from 'vue-chartjs'
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-import axios from 'axios'
+import { Pie } from "vue-chartjs";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import axios from "axios";
 
-ChartJS.register(ArcElement, Tooltip, Legend)
+ChartJS.register(ArcElement, Tooltip, Legend);
 // add colors,
 export default {
-  name: 'PieChart',
+  name: "PieChart",
   components: { Pie },
   data() {
     return {
       loaded: false,
       chartData: null,
-      statuses: []
-    }
+      statuses: [],
+      currentUser: null,
+    };
+  },
+  props: {
+    showOnlyUserProjects: {
+      type: Boolean,
+      default: false,
+    },
   },
   async mounted() {
     try {
       await this.loadData();
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   },
   methods: {
     async loadData() {
       try {
-        const response = await axios.get('/api/v1/projects')
-        const projectData = response.data
-        
-        const projectTitles = projectData.map(project => project.title)
-        const projectStatuses = projectData.map(project => project.status)
+        const response = await axios.get("/api/v1/projects");
+        let projectData = response.data;
+        this.getCurrentUser()
 
-        await this.getStatuses()
+        if (this.showOnlyUserProjects) {
+          projectData = projectData.filter((project) =>
+            project.team_members.includes(this.currentUser.id)
+          );
+        }
 
-        const statusNames = projectStatuses.map(statusId => this.getStatusName(statusId))
+        const projectTitles = projectData.map((project) => project.title);
+        const projectStatuses = projectData.map((project) => project.status);
 
-        const statusCounts = this.countStatuses(statusNames)
+        await this.getStatuses();
+
+        const statusNames = projectStatuses.map((statusId) =>
+          this.getStatusName(statusId)
+        );
+
+        const statusCounts = this.countStatuses(statusNames);
 
         this.chartData = {
           labels: Object.keys(statusCounts),
-          datasets: [{ data: Object.values(statusCounts), label: 'Project Status' }]
-        }
+          datasets: [
+            { data: Object.values(statusCounts), label: "Project Status" },
+          ],
+        };
 
-        this.loaded = true
+        this.loaded = true;
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     },
     async getStatuses() {
@@ -57,14 +75,14 @@ export default {
           headers: {
             Authorization: `token ${localStorage.token}`,
           },
-        })
+        });
         this.statuses = response.data;
       } catch (error) {
         console.error(error);
       }
     },
     getStatusName(statusId) {
-      const status = this.statuses.find(status => status.id === statusId);
+      const status = this.statuses.find((status) => status.id === statusId);
       return status ? status.name : "Unknown";
     },
     countStatuses(statuses) {
@@ -79,7 +97,22 @@ export default {
       } catch (error) {
         console.error(error);
       }
-    }
-  }
-}
+    },
+        getCurrentUser() {
+      axios
+        .get("/api/v1/users/me", {
+          headers: {
+            Authorization: `token ${localStorage.token}`,
+          },
+        })
+        .then((response) => {
+          this.currentUser = response.data;
+          this.currentUser.id = response.data.id;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+  },
+};
 </script>

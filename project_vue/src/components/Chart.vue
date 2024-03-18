@@ -8,7 +8,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import axios from 'axios'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
-// add colors, add updating data after adding projects
+// add colors,
 export default {
   name: 'PieChart',
   components: { Pie },

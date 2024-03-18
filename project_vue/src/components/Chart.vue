@@ -8,7 +8,6 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import axios from "axios";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-// add colors,
 export default {
   name: "PieChart",
   components: { Pie },
@@ -18,6 +17,14 @@ export default {
       chartData: null,
       statuses: [],
       currentUser: null,
+            statusColors: {
+        "New": "#FF6384",
+        "Open": "#36A2EB",
+        "In Progress": "#FFCE56",
+        "Completed": "#4BC0C0",
+        "On Hold": "#9966FF",
+        "Cancelled": "#FF9F40"
+      }
     };
   },
   props: {
@@ -60,7 +67,7 @@ export default {
         this.chartData = {
           labels: Object.keys(statusCounts),
           datasets: [
-            { data: Object.values(statusCounts), label: "Project Status" },
+            { data: Object.values(statusCounts), backgroundColor: Object.keys(statusCounts).map(status => this.statusColors[status]), label: "Project Status" },
           ],
         };
 

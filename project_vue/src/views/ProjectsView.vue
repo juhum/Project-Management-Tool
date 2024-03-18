@@ -67,6 +67,7 @@
         {{ isEditing ? "Save Project" : "Add Project" }}
       </button>
     </form>
+    <PieChart />
 
     <div class="project-grid">
       <div
@@ -120,7 +121,7 @@ import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
-
+import PieChart from '@/components/Chart'
 export default {
   name: "ProjectsView",
   data() {
@@ -147,6 +148,7 @@ export default {
   components: {
     Navbar,
     Footer,
+    PieChart,
   },
   mounted() {
     this.getProjects();

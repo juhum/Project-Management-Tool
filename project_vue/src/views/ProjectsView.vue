@@ -185,7 +185,7 @@ export default {
   },
   watch: {
     showOnlyUserProjects(newVal, oldVal) {
-      if (newVal !== oldVal) {
+      if (newVal !== oldVal && this.showChart) {
         this.$refs.pieChart.loadData();
       }
     },
@@ -242,7 +242,9 @@ export default {
           this.Projects.push(response.data);
           this.resetForm();
           toast.success("Project created successfully!");
-          this.$refs.pieChart.loadData();
+          if (this.showChart) {
+            this.$refs.pieChart.loadData();
+          }
         })
         .catch((error) => {
           console.error("Error creating project:", error);
@@ -276,7 +278,9 @@ export default {
           this.isEditing = false;
           this.showForm = false;
           toast.success("Project saved successfully!");
-          this.$refs.pieChart.loadData();
+          if (this.showChart) {
+            this.$refs.pieChart.loadData();
+          }
         })
         .catch((error) => {
           console.error("Error updating Project:", error);
@@ -290,7 +294,9 @@ export default {
           this.Projects = this.Projects.filter((p) => p.id !== project.id);
           console.log("Project deleted successfully");
           toast.success("Project deleted successfully!");
-          this.$refs.pieChart.loadData();
+          if (this.showChart) {
+            this.$refs.pieChart.loadData();
+          }
         })
         .catch((error) => {
           console.error("Error deleting Project:", error);

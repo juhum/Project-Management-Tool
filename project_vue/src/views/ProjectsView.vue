@@ -67,8 +67,16 @@
         {{ isEditing ? "Save Project" : "Add Project" }}
       </button>
     </form>
-    <PieChart ref="pieChart" :showOnlyUserProjects="showOnlyUserProjects" />
 
+    <button @click="toggleChart">
+      {{ showChart ? "Hide Chart" : "Show Chart" }}
+    </button>
+
+    <PieChart
+      v-if="showChart"
+      ref="pieChart"
+      :showOnlyUserProjects="showOnlyUserProjects"
+    />
 
     <div class="project-grid">
       <div
@@ -122,7 +130,7 @@ import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
-import PieChart from '@/components/Chart'
+import PieChart from "@/components/Chart";
 export default {
   name: "ProjectsView",
   data() {
@@ -144,6 +152,7 @@ export default {
       isEditing: false,
       statuses: [],
       selectedStatus: "",
+      showChart: false,
     };
   },
   components: {
@@ -174,7 +183,7 @@ export default {
       }
     },
   },
-    watch: {
+  watch: {
     showOnlyUserProjects(newVal, oldVal) {
       if (newVal !== oldVal) {
         this.$refs.pieChart.loadData();
@@ -331,6 +340,9 @@ export default {
     getStatusName(statusId) {
       const status = this.statuses.find((status) => status.id === statusId);
       return status ? status.name : "Unknown";
+    },
+    toggleChart() {
+      this.showChart = !this.showChart;
     },
   },
 };

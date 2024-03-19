@@ -6,7 +6,7 @@
 import { Pie } from "vue-chartjs";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import axios from "axios";
-
+// way to integrate chart with projectdetailview, reduce similiar code, components? , button to show hide chart
 ChartJS.register(ArcElement, Tooltip, Legend);
 export default {
   name: "PieChart",
@@ -67,7 +67,7 @@ export default {
         this.chartData = {
           labels: Object.keys(statusCounts),
           datasets: [
-            { data: Object.values(statusCounts), backgroundColor: Object.keys(statusCounts).map(status => this.statusColors[status]), label: "Project Status" },
+            { data: Object.values(statusCounts), backgroundColor: Object.keys(statusCounts).map(status => this.statusColors[status]), label: "Projects Number" },
           ],
         };
 

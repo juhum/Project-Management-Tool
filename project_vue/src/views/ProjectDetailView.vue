@@ -47,6 +47,7 @@
           <button v-if="$store.state.isAuthenticated" @click="cancelTask()">
             {{ showForm ? "Cancel" : "Add Task" }}
           </button>
+          <div class="filter-option">
           <select class="status-filter" v-model="selectedStatus">
             <option value="">All Statuses</option>
             <option
@@ -57,10 +58,25 @@
               {{ status.name }}
             </option>
           </select>
+          </div>
+          <div class="filter-option">
+          <select class="priority-filter" v-model="selectedPriorityLevel">
+            <option value="">All Priority Levels</option>
+            <option
+              v-for="priorityLevel in priorityLevels"
+              :key="priorityLevel.id"
+              :value="priorityLevel.id"
+            >
+              {{ priorityLevel.level }}
+            </option>
+          </select>
+          </div>
+          <div class="filter-option">
           <label>
             <input type="checkbox" v-model="showOnlyUserTasks" /> Enrolled Tasks
             Only
           </label>
+        </div>
         </div>
 
         <form
@@ -180,6 +196,7 @@ export default {
       files: [],
       statuses: [],
       selectedStatus: "",
+      selectedPriorityLevel: "",
     };
   },
   components: {
@@ -200,12 +217,16 @@ export default {
         return this.Tasks.filter(
           (task) =>
             task.assigned_to === this.currentUser.id &&
-            (this.selectedStatus === "" || task.status === this.selectedStatus)
+            (!this.selectedStatus || task.status === this.selectedStatus) &&
+            (!this.selectedPriorityLevel ||
+              task.priority_level === this.selectedPriorityLevel)
         );
       } else {
         return this.Tasks.filter(
           (task) =>
-            this.selectedStatus === "" || task.status === this.selectedStatus
+            (!this.selectedStatus || task.status === this.selectedStatus) &&
+            (!this.selectedPriorityLevel ||
+              task.priority_level === this.selectedPriorityLevel)
         );
       }
     },
@@ -579,7 +600,7 @@ button:hover {
   margin: 10px;
 }
 
-.status-filter {
+.status-filter, .priority-filter {
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ddd;
@@ -594,4 +615,6 @@ button:hover {
     margin-right: auto;
   }
 }
+
+
 </style>

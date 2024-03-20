@@ -625,6 +625,9 @@ button:hover {
   .project-page .task-manager__actions button {
     margin-top: 10px;
   }
+  button{
+    margin-bottom: 5px;
+  }
 }
 
 

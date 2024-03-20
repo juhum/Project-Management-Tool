@@ -483,5 +483,29 @@ button:hover {
   border-radius: 3px;
   resize: vertical;
 }
+
+.project-manager__actions {
+  display: flex;
+  flex-wrap: wrap; 
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.project-manager__actions button {
+  margin-bottom: 10px; 
+}
+
+@media (max-width: 768px) {
+  .project-manager__actions {
+    flex-direction: column; 
+    align-items: flex-start; 
+  }
+
+  .project-manager__actions button {
+    margin-right: 0; 
+  }
+}
+
 </style>
 

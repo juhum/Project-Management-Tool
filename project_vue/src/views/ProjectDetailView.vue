@@ -616,5 +616,16 @@ button:hover {
   }
 }
 
+@media (max-width: 768px) {
+  .project-page .task-manager__actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .project-page .task-manager__actions button {
+    margin-top: 10px;
+  }
+}
+
 
 </style>

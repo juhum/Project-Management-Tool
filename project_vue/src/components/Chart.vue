@@ -6,7 +6,7 @@
 import { Pie } from "vue-chartjs";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import axios from "axios";
-// way to integrate chart with projectdetailview, reduce similiar code, components? , button to show hide chart
+
 ChartJS.register(ArcElement, Tooltip, Legend);
 export default {
   name: "PieChart",
@@ -15,23 +15,38 @@ export default {
     return {
       loaded: false,
       chartData: null,
-      statuses: [],
+      fields: [],
       currentUser: null,
-            statusColors: {
+      fieldColors: {
+        "Low": "#FF6384",
+        "Medium": "#36A2EB",
+        "High": "#FFCE56",
         "New": "#FF6384",
         "Open": "#36A2EB",
         "In Progress": "#FFCE56",
         "Completed": "#4BC0C0",
         "On Hold": "#9966FF",
-        "Cancelled": "#FF9F40"
-      }
+        "Cancelled": "#FF9F40",
+      },
     };
   },
   props: {
-    showOnlyUserProjects: {
+    responseData: {
+      type: Array,
+      required: true,
+    },
+    showOnlyUserChecker: {
       type: Boolean,
       default: false,
     },
+    currentUserId: {
+      type: Number,
+      required: true,
+    },
+    dataField: {
+      type: Array,
+      required: true,
+      },
   },
   async mounted() {
     try {
@@ -43,31 +58,53 @@ export default {
   methods: {
     async loadData() {
       try {
-        const response = await axios.get("/api/v1/projects");
-        let projectData = response.data;
-        this.getCurrentUser()
+        let data = this.responseData;
 
-        if (this.showOnlyUserProjects) {
-          projectData = projectData.filter((project) =>
-            project.team_members.includes(this.currentUser.id)
-          );
+        if (this.showOnlyUserChecker) {
+          data = data.filter((item) => {
+            if (item.assigned_to !== undefined) {
+              return item.assigned_to === this.currentUserId;
+            } else if (
+              item.team_members !== undefined &&
+              Array.isArray(item.team_members)
+            ) {
+              return item.team_members.includes(this.currentUserId);
+            }
+          });
         }
 
-        const projectTitles = projectData.map((project) => project.title);
-        const projectStatuses = projectData.map((project) => project.status);
+        let dataFields;
+        let dataNames;
 
-        await this.getStatuses();
-
-        const statusNames = projectStatuses.map((statusId) =>
-          this.getStatusName(statusId)
+        if (this.dataField[0].name  !== undefined) {
+          dataFields = data.map((item) => item.status);
+          this.fields = this.dataField;
+          dataNames = dataFields.map((fieldId) =>
+          this.getStatusName(fieldId)
         );
+        } else if (this.dataField[0].level !== undefined) {
+          dataFields = data.map((item) => item.priority_level);
+          this.fields = this.dataField;
+          dataNames = dataFields.map((fieldId) =>
+          this.getPriorityLevelName(fieldId)
+          );
+        } else {
+          throw new Error('Invalid dataField prop value.');
+        }
+      
 
-        const statusCounts = this.countStatuses(statusNames);
+        const fieldCounts = this.countFields(dataNames);
 
         this.chartData = {
-          labels: Object.keys(statusCounts),
+          labels: Object.keys(fieldCounts),
           datasets: [
-            { data: Object.values(statusCounts), backgroundColor: Object.keys(statusCounts).map(status => this.statusColors[status]), label: "Projects Number" },
+            {
+              data: Object.values(fieldCounts),
+              backgroundColor: Object.keys(fieldCounts).map(
+                (field) => this.fieldColors[field]
+              ),
+              label: "Number",
+            },
           ],
         };
 
@@ -76,25 +113,19 @@ export default {
         console.error(error);
       }
     },
-    async getStatuses() {
-      try {
-        const response = await axios.get("/api/v1/statuses/", {
-          headers: {
-            Authorization: `token ${localStorage.token}`,
-          },
-        });
-        this.statuses = response.data;
-      } catch (error) {
-        console.error(error);
-      }
+    getStatusName(fieldId) {
+      const field = this.fields.find((field) => field.id === fieldId);
+      return field ? field.name : "Unknown";
     },
-    getStatusName(statusId) {
-      const status = this.statuses.find((status) => status.id === statusId);
-      return status ? status.name : "Unknown";
+    getPriorityLevelName(priorityLevelId) {
+      const level = this.fields.find(
+        (level) => level.id === priorityLevelId
+      );
+      return level ? level.level : "Unknown";
     },
-    countStatuses(statuses) {
-      return statuses.reduce((acc, status) => {
-        acc[status] = (acc[status] || 0) + 1;
+    countFields(fields) {
+      return fields.reduce((acc, field) => {
+        acc[field] = (acc[field] || 0) + 1;
         return acc;
       }, {});
     },
@@ -104,21 +135,6 @@ export default {
       } catch (error) {
         console.error(error);
       }
-    },
-        getCurrentUser() {
-      axios
-        .get("/api/v1/users/me", {
-          headers: {
-            Authorization: `token ${localStorage.token}`,
-          },
-        })
-        .then((response) => {
-          this.currentUser = response.data;
-          this.currentUser.id = response.data.id;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
     },
   },
 };

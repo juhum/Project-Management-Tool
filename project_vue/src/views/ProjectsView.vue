@@ -75,7 +75,10 @@
     <PieChart
       v-if="showChart"
       ref="pieChart"
-      :showOnlyUserProjects="showOnlyUserProjects"
+      :showOnlyUserChecker="showOnlyUserProjects"
+      :responseData="Projects"
+      :currentUserId="currentUser.id"
+      :dataField="statuses"
     />
 
     <div class="project-grid">
@@ -183,13 +186,16 @@ export default {
       }
     },
   },
-  watch: {
-    showOnlyUserProjects(newVal, oldVal) {
-      if (newVal !== oldVal && this.showChart) {
+watch: {
+  showOnlyUserProjects(newVal, oldVal) {
+    if (newVal !== oldVal && this.showChart) {
+      this.$nextTick(() => {
         this.$refs.pieChart.loadData();
-      }
-    },
+      });
+    }
   },
+},
+
   methods: {
     getProjects() {
       axios

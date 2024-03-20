@@ -48,35 +48,35 @@
             {{ showForm ? "Cancel" : "Add Task" }}
           </button>
           <div class="filter-option">
-          <select class="status-filter" v-model="selectedStatus">
-            <option value="">All Statuses</option>
-            <option
-              v-for="status in statuses"
-              :key="status.id"
-              :value="status.id"
-            >
-              {{ status.name }}
-            </option>
-          </select>
+            <select class="status-filter" v-model="selectedStatus">
+              <option value="">All Statuses</option>
+              <option
+                v-for="status in statuses"
+                :key="status.id"
+                :value="status.id"
+              >
+                {{ status.name }}
+              </option>
+            </select>
           </div>
           <div class="filter-option">
-          <select class="priority-filter" v-model="selectedPriorityLevel">
-            <option value="">All Priority Levels</option>
-            <option
-              v-for="priorityLevel in priorityLevels"
-              :key="priorityLevel.id"
-              :value="priorityLevel.id"
-            >
-              {{ priorityLevel.level }}
-            </option>
-          </select>
+            <select class="priority-filter" v-model="selectedPriorityLevel">
+              <option value="">All Priority Levels</option>
+              <option
+                v-for="priorityLevel in priorityLevels"
+                :key="priorityLevel.id"
+                :value="priorityLevel.id"
+              >
+                {{ priorityLevel.level }}
+              </option>
+            </select>
           </div>
           <div class="filter-option">
-          <label>
-            <input type="checkbox" v-model="showOnlyUserTasks" /> Enrolled Tasks
-            Only
-          </label>
-        </div>
+            <label>
+              <input type="checkbox" v-model="showOnlyUserTasks" /> Enrolled
+              Tasks Only
+            </label>
+          </div>
         </div>
 
         <form
@@ -131,6 +131,20 @@
             {{ isEditing ? "Save Task" : "Add Task" }}
           </button>
         </form>
+        <!-- add chart selection/second chart -->
+        <button @click="toggleChart">
+          {{ showChart ? "Hide Chart" : "Show Chart" }}
+        </button>
+        <div class="chart">
+          <PieChart
+            v-if="showChart"
+            ref="pieChart"
+            :responseData="Tasks"
+            :showOnlyUserChecker="showOnlyUserTasks"
+            :currentUserId="currentUser.id"
+            :dataField="priorityLevels"
+          />
+        </div>
 
         <div class="Task-grid">
           <div v-for="task in filteredTasks" :key="task.id" class="task-item">
@@ -168,6 +182,7 @@
 import axios from "axios";
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
+import PieChart from "@/components/Chart";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
@@ -197,11 +212,13 @@ export default {
       statuses: [],
       selectedStatus: "",
       selectedPriorityLevel: "",
+      showChart: false,
     };
   },
   components: {
     Navbar,
     Footer,
+    PieChart,
   },
   mounted() {
     this.getProjectDetails(this.projectId);
@@ -231,6 +248,15 @@ export default {
       }
     },
   },
+  watch: {
+  showOnlyUserTasks(newVal, oldVal) {
+    if (newVal !== oldVal && this.showChart) {
+      this.$nextTick(() => {
+        this.$refs.pieChart.loadData();
+      });
+    }
+  },
+},
   methods: {
     getProjectDetails(projectId) {
       axios
@@ -314,6 +340,9 @@ export default {
           this.Tasks.push(response.data);
           this.resetForm();
           toast.success("Task created successfully!");
+          if (this.showChart) {
+            this.$refs.pieChart.loadData();
+          }
         })
         .catch((error) => {
           console.error("Error creating task:", error);
@@ -348,6 +377,9 @@ export default {
           this.isEditing = false;
           this.showForm = false;
           toast.success("Task saved successfully!");
+          if (this.showChart) {
+            this.$refs.pieChart.loadData();
+          }
         })
         .catch((error) => {
           console.error("Error updating task:", error);
@@ -361,6 +393,9 @@ export default {
           this.Tasks = this.Tasks.filter((t) => t.id !== task.id);
           console.log("Task deleted successfully");
           toast.success("Task deleted successfully!");
+          if (this.showChart) {
+            this.$refs.pieChart.loadData();
+          }
         })
         .catch((error) => {
           console.error("Error deleting task:", error);
@@ -490,6 +525,9 @@ export default {
       const status = this.statuses.find((status) => status.id === statusId);
       return status ? status.name : "Unknown";
     },
+    toggleChart() {
+      this.showChart = !this.showChart;
+    },
   },
 };
 </script>
@@ -600,7 +638,8 @@ button:hover {
   margin: 10px;
 }
 
-.status-filter, .priority-filter {
+.status-filter,
+.priority-filter {
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ddd;
@@ -625,10 +664,14 @@ button:hover {
   .project-page .task-manager__actions button {
     margin-top: 10px;
   }
-  button{
+  button {
     margin-bottom: 5px;
   }
 }
 
-
+@media (min-width: 700px) {
+  .chart{
+    width: 50%;
+  }
+}
 </style>

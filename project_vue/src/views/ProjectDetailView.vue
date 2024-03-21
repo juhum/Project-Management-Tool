@@ -131,9 +131,15 @@
             {{ isEditing ? "Save Task" : "Add Task" }}
           </button>
         </form>
-        <!-- add chart selection/second chart -->
         <button @click="toggleChart">
           {{ showChart ? "Hide Chart" : "Show Chart" }}
+        </button>
+        <button class="switch-button" v-if="showChart" @click="toggleDataField">
+          {{
+            dataField === priorityLevels
+              ? "Switch to Status"
+              : "Switch to Priority Levels"
+          }}
         </button>
         <div class="chart">
           <PieChart
@@ -142,7 +148,7 @@
             :responseData="Tasks"
             :showOnlyUserChecker="showOnlyUserTasks"
             :currentUserId="currentUser.id"
-            :dataField="priorityLevels"
+            :dataField="dataField"
           />
         </div>
 
@@ -213,6 +219,7 @@ export default {
       selectedStatus: "",
       selectedPriorityLevel: "",
       showChart: false,
+      dataField: [],
     };
   },
   components: {
@@ -249,14 +256,14 @@ export default {
     },
   },
   watch: {
-  showOnlyUserTasks(newVal, oldVal) {
-    if (newVal !== oldVal && this.showChart) {
-      this.$nextTick(() => {
-        this.$refs.pieChart.loadData();
-      });
-    }
+    showOnlyUserTasks(newVal, oldVal) {
+      if (newVal !== oldVal && this.showChart) {
+        this.$nextTick(() => {
+          this.$refs.pieChart.loadData();
+        });
+      }
+    },
   },
-},
   methods: {
     getProjectDetails(projectId) {
       axios
@@ -296,6 +303,7 @@ export default {
         .get(`/api/v1/priority-levels`)
         .then((response) => {
           this.priorityLevels = response.data;
+          this.dataField = response.data;
         })
         .catch((error) => {
           console.log(error);
@@ -528,6 +536,18 @@ export default {
     toggleChart() {
       this.showChart = !this.showChart;
     },
+    toggleDataField() {
+      if (this.dataField === this.priorityLevels) {
+        this.dataField = this.statuses;
+      } else {
+        this.dataField = this.priorityLevels;
+      }
+      if (this.showChart) {
+        this.$nextTick(() => {
+          this.$refs.pieChart.loadData();
+        });
+      }
+    },
   },
 };
 </script>
@@ -647,6 +667,10 @@ button:hover {
   resize: vertical;
 }
 
+.switch-button{
+  margin-left: 10px;
+}
+
 @media (max-width: 414px) {
   .project-page {
     width: calc(100% - 10px);
@@ -670,7 +694,7 @@ button:hover {
 }
 
 @media (min-width: 700px) {
-  .chart{
+  .chart {
     width: 50%;
   }
 }

@@ -3,9 +3,11 @@
     <ul>
       <li><router-link to="/" class="navbar-item">Home</router-link></li>
      <li><router-link to="/projects" class="navbar-item">Projects</router-link></li>
+     <li><router-link to="/projects" class="navbar-item">Calendar</router-link></li>
     </ul>
     <ul class="navbar-right">
       <template v-if="$store.state.isAuthenticated">
+                <li @click="logout" class="navbar-item">Notifications</li>
         <li @click="logout" class="navbar-item">Logout</li>
       </template>
       <template v-else>

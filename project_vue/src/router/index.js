@@ -6,6 +6,7 @@ import LoginView from '../views/LoginView'
 import NotFoundView from '../views/NotFoundView'
 import ProjectsView from '../views/ProjectsView'
 import ProjectDetailView from '../views/ProjectDetailView'
+import Notifications from '../views/NotificationView'
 
 const routes = [
   {
@@ -51,7 +52,15 @@ const routes = [
     meta: {
       requiresAuth: true
     }
-}
+  },
+  {
+    path: '/notifications',
+    name: 'notifications',
+    component: Notifications,
+    meta: {
+      requiresAuth: true
+    }
+  },
 ]
 
 const router = createRouter({

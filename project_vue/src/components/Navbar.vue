@@ -1,26 +1,48 @@
 <template>
-  <nav class="navbar">
-    <ul>
-      <li><router-link to="/" class="navbar-item">Home</router-link></li>
-     <li><router-link to="/projects" class="navbar-item">Projects</router-link></li>
-     <li><router-link to="/projects" class="navbar-item">Calendar</router-link></li>
-    </ul>
-    <ul class="navbar-right">
-      <template v-if="$store.state.isAuthenticated">
-                <li @click="logout" class="navbar-item">Notifications</li>
-        <li @click="logout" class="navbar-item">Logout</li>
-      </template>
-      <template v-else>
-        <li><router-link to="/login" class="navbar-item">Login</router-link></li>
-      </template>
-    </ul>
-  </nav>
+  <div>
+    <nav class="navbar">
+      <ul>
+        <li><router-link to="/" class="navbar-item">Home</router-link></li>
+        <li>
+          <router-link to="/projects" class="navbar-item">Projects</router-link>
+        </li>
+      </ul>
+      <ul class="navbar-right">
+        <template v-if="$store.state.isAuthenticated">
+          <li @click="showNotifications" class="navbar-item">Notifications</li>
+          <li @click="logout" class="navbar-item">Logout</li>
+        </template>
+        <template v-else>
+          <li>
+            <router-link to="/login" class="navbar-item">Login</router-link>
+          </li>
+        </template>
+      </ul>
+    </nav>
+    <div v-if="showNotificationBox" class="notification-box">
+      <div class="notification-content">
+        <div
+          v-for="notification in notifications"
+          :key="notification.id"
+          class="notification"
+        >
+          {{ notification.message }} <a>Check</a>
+        </div>
+        <router-link to="/notifications" class="">All Notifications</router-link>
+      </div>
+    </div>
+  </div>
 </template>
-
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
+  data() {
+    return {
+      showNotificationBox: false,
+      notifications: [],
+    };
+  },
   methods: {
     logout() {
       axios.defaults.headers.common["Authorization"] = "";
@@ -29,12 +51,30 @@ export default {
       localStorage.removeItem("username");
       localStorage.removeItem("userid");
 
-      this.$store.commit('removeToken');
+      this.$store.commit("removeToken");
 
-      this.$router.push('/login');
-    }
-  }
-}
+      this.$router.push("/login");
+    },
+    showNotifications() {
+      // If notification box is currently visible, hide it
+      if (this.showNotificationBox) {
+        this.showNotificationBox = false;
+        return; // Exit early to avoid unnecessary API calls
+      }
+
+      // Fetch notifications from the server
+      axios
+        .get("/api/v1/notifications")
+        .then((response) => {
+          this.notifications = response.data;
+          this.showNotificationBox = true;
+        })
+        .catch((error) => {
+          console.error("Error fetching notifications:", error);
+        });
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -45,7 +85,7 @@ export default {
   width: 100%;
   color: #fff;
   background-color: black;
-  display: flex; 
+  display: flex;
   justify-content: space-between;
 }
 
@@ -64,8 +104,8 @@ export default {
 }
 
 .navbar-right {
-  display: flex; 
-  align-items: center; 
+  display: flex;
+  align-items: center;
 }
 
 ul {
@@ -76,5 +116,25 @@ ul {
 li {
   display: inline;
   margin-right: 10px;
+}
+
+.notification-box {
+  position: absolute;
+  top: 50px; /* Adjust based on your navbar height */
+  right: 60px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 120px;
+}
+
+.notification-content {
+  padding: 10px;
+}
+
+.notification {
+  margin-bottom: 5px;
 }
 </style>

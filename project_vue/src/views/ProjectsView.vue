@@ -134,6 +134,7 @@ import Footer from "@/components/Footer.vue";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import PieChart from "@/components/Chart";
+import { postNotification } from "@/utils/notifications.js";
 export default {
   name: "ProjectsView",
   data() {
@@ -248,13 +249,16 @@ watch: {
           this.Projects.push(response.data);
           this.resetForm();
           toast.success("Project created successfully!");
+          console.log(response.data.id);
+          console.log(response.data.team_members);
+          postNotification(response.data.id, "project", response.data.team_members, false);
           if (this.showChart) {
             this.$refs.pieChart.loadData();
           }
         })
         .catch((error) => {
           console.error("Error creating project:", error);
-          toast.error("An error occurred while creating the task.");
+          toast.error("An error occurred while creating the project.");
         });
     },
     editProject(project) {
@@ -284,6 +288,8 @@ watch: {
           this.isEditing = false;
           this.showForm = false;
           toast.success("Project saved successfully!");
+          console.log(response.data.team_members);
+          postNotification(response.data.id, "project", response.data.team_members, true);
           if (this.showChart) {
             this.$refs.pieChart.loadData();
           }

@@ -34,6 +34,9 @@ class Task(models.Model):
     deadline = models.DateField()
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.title
+
 class File(models.Model):
     file = models.FileField(upload_to='files/')
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)  # Use Djoser's User model
@@ -56,9 +59,11 @@ class ProgressReport(models.Model):
 
 class Notification(models.Model):
     message = models.TextField()
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE)  # Use Djoser's User model
+    recipients = models.ManyToManyField(User) 
     read = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, blank=True)
 
 
 def project_file_path(instance, filename):

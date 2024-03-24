@@ -190,6 +190,7 @@ import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
 import PieChart from "@/components/Chart";
 import { toast } from "vue3-toastify";
+import { postNotification } from "@/utils/notifications.js";
 import "vue3-toastify/dist/index.css";
 
 export default {
@@ -348,6 +349,8 @@ export default {
           this.Tasks.push(response.data);
           this.resetForm();
           toast.success("Task created successfully!");
+          const convertAssignedToArray = [response.data.assigned_to]
+          postNotification(response.data.id, "task", convertAssignedToArray, false);
           if (this.showChart) {
             this.$refs.pieChart.loadData();
           }
@@ -385,6 +388,8 @@ export default {
           this.isEditing = false;
           this.showForm = false;
           toast.success("Task saved successfully!");
+          const convertAssignedToArray = [response.data.assigned_to]
+          postNotification(response.data.id, "task", convertAssignedToArray, true);
           if (this.showChart) {
             this.$refs.pieChart.loadData();
           }

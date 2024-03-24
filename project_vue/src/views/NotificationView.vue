@@ -25,7 +25,7 @@ export default {
   name: "NotificationView",
   data() {
     return {
-      notifications: [], // changed the property name to lowercase
+      notifications: [], 
       currentUser: null,
     };
   },

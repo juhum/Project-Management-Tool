@@ -43,6 +43,9 @@ export default {
       notifications: [],
     };
   },
+  mounted() {
+    this.getCurrentUser();
+  },
   methods: {
     logout() {
       axios.defaults.headers.common["Authorization"] = "";
@@ -56,21 +59,34 @@ export default {
       this.$router.push("/login");
     },
     showNotifications() {
-      // If notification box is currently visible, hide it
       if (this.showNotificationBox) {
         this.showNotificationBox = false;
-        return; // Exit early to avoid unnecessary API calls
+        return; 
       }
 
-      // Fetch notifications from the server
       axios
         .get("/api/v1/notifications")
         .then((response) => {
-          this.notifications = response.data;
+          this.notifications = response.data.filter(notification => notification.recipients.includes(this.currentUser.id));
           this.showNotificationBox = true;
         })
         .catch((error) => {
           console.error("Error fetching notifications:", error);
+        });
+    },
+    getCurrentUser() {
+      axios
+        .get("/api/v1/users/me", {
+          headers: {
+            Authorization: `token ${localStorage.token}`,
+          },
+        })
+        .then((response) => {
+          this.currentUser = response.data;
+          this.currentUser.id = response.data.id;
+        })
+        .catch((error) => {
+          console.log(error);
         });
     },
   },

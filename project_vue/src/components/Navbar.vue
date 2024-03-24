@@ -28,7 +28,9 @@
         >
           {{ notification.message }} <a>Check</a>
         </div>
-        <router-link to="/notifications" class="">All Notifications</router-link>
+        <router-link to="/notifications" class=""
+          >All Notifications</router-link
+        >
       </div>
     </div>
   </div>
@@ -61,13 +63,18 @@ export default {
     showNotifications() {
       if (this.showNotificationBox) {
         this.showNotificationBox = false;
-        return; 
+        return;
       }
 
       axios
         .get("/api/v1/notifications")
         .then((response) => {
-          this.notifications = response.data.filter(notification => notification.recipients.includes(this.currentUser.id));
+          this.notifications = response.data
+            .filter((notification) =>
+              notification.recipients.includes(this.currentUser.id)
+            )
+            .reverse();
+          this.showNotificationBox = true;
           this.showNotificationBox = true;
         })
         .catch((error) => {

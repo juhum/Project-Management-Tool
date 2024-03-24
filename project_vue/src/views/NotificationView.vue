@@ -41,7 +41,11 @@ export default {
       axios
         .get("/api/v1/notifications")
         .then((response) => {
-          this.notifications = response.data.filter(notification => notification.recipients.includes(this.currentUser.id));
+                    this.notifications = response.data
+            .filter((notification) =>
+              notification.recipients.includes(this.currentUser.id)
+            )
+            .reverse();
         })
         .catch((error) => {
           console.error("Error fetching notifications:", error);

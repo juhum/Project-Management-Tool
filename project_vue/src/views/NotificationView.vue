@@ -5,7 +5,7 @@
         <div class="notification-box">
       <div class="notification-content">
         <div
-          v-for="notification in Notifications"
+          v-for="notification in notifications"
           :key="notification.id"
           class="notification"
         >
@@ -20,12 +20,13 @@
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
 import axios from "axios";
-// show only assigned to user notifications
+
 export default {
   name: "NotificationView",
   data() {
     return {
-        Notifications: [],
+      notifications: [], // changed the property name to lowercase
+      currentUser: null,
     };
   },
   components: {
@@ -33,23 +34,38 @@ export default {
     Footer,
   },
   mounted() {
-    this.getNotifications();
+    this.getCurrentUser();
   },
   methods: {
-      getNotifications() {
+    getNotifications() {
       axios
         .get("/api/v1/notifications")
         .then((response) => {
-          this.Notifications = response.data;
+          this.notifications = response.data.filter(notification => notification.recipients.includes(this.currentUser.id));
         })
         .catch((error) => {
           console.error("Error fetching notifications:", error);
         });
     },
+    getCurrentUser() {
+      axios
+        .get("/api/v1/users/me", {
+          headers: {
+            Authorization: `token ${localStorage.token}`,
+          },
+        })
+        .then((response) => {
+          this.currentUser = response.data;
+          this.currentUser.id = response.data.id;
+          this.getNotifications();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
   },
 }
 </script>
-
 
 <style scoped>
 

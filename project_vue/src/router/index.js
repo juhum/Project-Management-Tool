@@ -7,6 +7,8 @@ import NotFoundView from '../views/NotFoundView'
 import ProjectsView from '../views/ProjectsView'
 import ProjectDetailView from '../views/ProjectDetailView'
 import Notifications from '../views/NotificationView'
+import TasksView from '../views/TasksView'
+import TaskDetailView from '../views/TaskDetailView'
 
 const routes = [
   {
@@ -61,6 +63,23 @@ const routes = [
       requiresAuth: true
     }
   },
+  {
+    path: '/tasks',
+    name: 'tasks',
+    component: TasksView,
+    meta: {
+      requiresAuth: true
+    }
+    },
+    {
+      path: '/tasks/:taskId',
+      name: 'TaskDetailView',
+      component: TaskDetailView,
+      props: true,
+      meta: {
+        requiresAuth: true
+      }
+    },
 ]
 
 const router = createRouter({

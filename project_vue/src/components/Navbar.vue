@@ -6,6 +6,9 @@
         <li>
           <router-link to="/projects" class="navbar-item">Projects</router-link>
         </li>
+        <li>
+          <router-link to="/tasks" class="navbar-item">My tasks</router-link>
+        </li>
       </ul>
       <ul class="navbar-right">
         <template v-if="$store.state.isAuthenticated">
@@ -137,8 +140,7 @@ export default {
         return `/projects/${notification.project}`;
       } else if (notification.task) {
         return `/tasks/${notification.task}`;
-      } 
-      
+      }
     },
   },
 };

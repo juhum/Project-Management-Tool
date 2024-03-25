@@ -9,7 +9,15 @@
       </ul>
       <ul class="navbar-right">
         <template v-if="$store.state.isAuthenticated">
-          <li @click="showNotifications" class="navbar-item">Notifications</li>
+          <li @click="showNotifications" class="navbar-item">
+            <span
+              :class="{
+                pulse: hasUnreadNotifications,
+                'unread-notifications': hasUnreadNotifications,
+              }"
+              >Notifications</span
+            >
+          </li>
           <li @click="logout" class="navbar-item">Logout</li>
         </template>
         <template v-else>
@@ -22,11 +30,9 @@
     <div v-if="showNotificationBox" class="notification-box">
       <div class="notification-content">
         <p class="notifications-text">Recent notifications</p>
-        <div
-          v-for="notification in notifications"
-          :key="notification.id"
-          class="notification"
-        >
+<div v-for="notification in notifications.slice(0, 3)" :key="notification.id"
+     :class="{ notification: true, read: notification.read }"
+     class="notification">
           {{ notification.message }} <a>Check</a>
         </div>
         <router-link to="/notifications" class=""
@@ -46,8 +52,14 @@ export default {
       notifications: [],
     };
   },
+  computed: {
+    hasUnreadNotifications() {
+      return this.notifications.some((notification) => !notification.read);
+    },
+  },
   mounted() {
     this.getCurrentUser();
+    this.getNotifications();
   },
   methods: {
     logout() {
@@ -62,25 +74,7 @@ export default {
       this.$router.push("/login");
     },
     showNotifications() {
-      if (this.showNotificationBox) {
-        this.showNotificationBox = false;
-        return;
-      }
-
-      axios
-        .get("/api/v1/notifications")
-        .then((response) => {
-          this.notifications = response.data
-            .filter((notification) =>
-              notification.recipients.includes(this.currentUser.id)
-            ) 
-            .reverse().slice(0, 3);
-          this.showNotificationBox = true;
-          this.showNotificationBox = true;
-        })
-        .catch((error) => {
-          console.error("Error fetching notifications:", error);
-        });
+      this.showNotificationBox = !this.showNotificationBox;
     },
     getCurrentUser() {
       axios
@@ -95,6 +89,20 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+        });
+    },
+    getNotifications() {
+      axios
+        .get("/api/v1/notifications")
+        .then((response) => {
+          this.notifications = response.data
+            .filter((notification) =>
+              notification.recipients.includes(this.currentUser.id)
+            )
+            .reverse()
+        })
+        .catch((error) => {
+          console.error("Error fetching notifications:", error);
         });
     },
   },
@@ -144,7 +152,7 @@ li {
 
 .notification-box {
   position: absolute;
-  top: 50px; /* Adjust based on your navbar height */
+  top: 50px;
   right: 60px;
   background-color: #fff;
   border: 1px solid #ccc;
@@ -153,10 +161,6 @@ li {
   z-index: 1000;
   min-width: 120px;
 }
-
-/* .notification-content {
-  padding: 10px;
-} */
 
 .notification {
   margin-bottom: 5px;
@@ -167,9 +171,52 @@ li {
   text-align: left; /* Center-align all content */
 }
 
-.notifications-text{
+.notifications-text {
   margin-top: 0;
-  margin-bottom: 10px; /* Add some space between paragraph and notifications */
-  text-align: center; /* Align the paragraph to the left */
+  margin-bottom: 10px; 
+  text-align: center; 
+}
+
+.notification-badge {
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  border-radius: 50%;
+  padding: 4px 6px;
+  margin-left: 5px;
+}
+
+.notification {
+  margin-bottom: 5px;
+  animation: pulseUnread 2s infinite alternate both;
+}
+
+@keyframes pulseUnread {
+  from {
+    background-color: #fff; /* Initial background color */
+  }
+  to {
+    background-color: #ff6347;
+  }
+}
+
+.notification.read {
+  animation: none;
+}
+
+.unread-notifications {
+  color: red; 
+}
+
+.pulse {
+  animation: pulseUnreadText 2s infinite alternate both;
+}
+@keyframes pulseUnreadText {
+  from {
+    color: white;
+  }
+  to {
+    color: red;
+  }
 }
 </style>

@@ -1,32 +1,38 @@
 <template>
-<div>
+  <div class="notification-view">
     <Navbar />
     <h1>Notifications</h1>
-        <div class="notification-box">
-      <div class="notification-content">
-        <div
-          v-for="notification in notifications"
-          :key="notification.id"
-          class="notification"
+    <div class="notification-box">
+      <div
+        v-for="notification in notifications"
+        :key="notification.id"
+        :class="{ notification: true, unread: !notification.read }"
+      >
+        <router-link
+          class="notification-link"
+          :to="getNotificationLink(notification)"
+          @click="markAsRead(notification)"
         >
-          {{ notification.message }}
-        </div>
+          <div class="notification-content">
+            {{ notification.message }}
+          </div>
+        </router-link>
       </div>
-        </div>
+    </div>
     <Footer />
-</div>
+  </div>
 </template>
+
 <script>
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
 import axios from "axios";
-// different color background for not readen notification, clicking on notification redirects to project and makes the notification read 
-// utils for same functions, remember to return data instead of to values - task.js project.js user.js
+// different color background for not readen notification, clicking on notification redirects to project and makes the notification read
 export default {
   name: "NotificationView",
   data() {
     return {
-      notifications: [], 
+      notifications: [],
       currentUser: null,
     };
   },
@@ -42,7 +48,7 @@ export default {
       axios
         .get("/api/v1/notifications")
         .then((response) => {
-                    this.notifications = response.data
+          this.notifications = response.data
             .filter((notification) =>
               notification.recipients.includes(this.currentUser.id)
             )
@@ -68,10 +74,65 @@ export default {
           console.log(error);
         });
     },
+    markAsRead(notification) {
+      if (!notification.read) {
+        notification.read = true;
+
+        axios
+          .patch(`/api/v1/notifications/${notification.id}/`, { read: true })
+          .then((response) => {
+            console.log("Notification marked as read");
+          })
+          .catch((error) => {
+            console.error("Error marking notification as read:", error);
+            notification.read = false;
+          });
+      }
+    },
+    getNotificationLink(notification) {
+      if (notification.project) {
+        return `/projects/${notification.project}`;
+      } else if (notification.task) {
+        return `/tasks/${notification.task}`;
+      }
+    },
   },
-}
+};
 </script>
 
 <style scoped>
+.notification-view {
+  padding: 20px;
+}
+
+.notification-box {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.notification {
+  cursor: pointer;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #f0f0f0;
+  color: black;
+}
+.notification-link {
+  text-decoration: none;
+  color: inherit;
+}
+.unread {
+  background-color: #ff6961; 
+}
+
+.notification:hover {
+  background-color: #e0e0e0;
+}
+
+.unread:hover {
+  background-color: #ff6347; 
+}
+
 
 </style>

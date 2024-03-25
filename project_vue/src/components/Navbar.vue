@@ -39,16 +39,15 @@
           :class="{ notification: true, read: notification.read }"
           class="notification"
         >
-          {{ notification.message }}
-          <router-link
+          <router-link class="notification-link"
             :to="getNotificationLink(notification)"
             @click="markAsRead(notification)"
           >
-            Check
+            {{ notification.message }}
           </router-link>
         </div>
-        <router-link to="/notifications" class=""
-          ><p class="notifications-text">All Notifications</p></router-link
+        <router-link to="/notifications" class="notification-all"
+          ><p class="notification-all">All Notifications</p></router-link
         >
       </div>
     </div>
@@ -118,9 +117,6 @@ export default {
         });
     },
     markAsRead(notification) {
-      // Check if the notification is unread
-      console.log(notification.read);
-      console.log(notification.id);
       if (!notification.read) {
         notification.read = true;
 
@@ -190,7 +186,7 @@ li {
 .notification-box {
   position: absolute;
   top: 50px;
-  right: 60px;
+  right: 0;
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -201,26 +197,19 @@ li {
 
 .notification {
   margin-bottom: 5px;
+  background: #f0f0f0;
+  padding: 5px;
 }
 
 .notification-content {
   padding: 10px;
-  text-align: left; /* Center-align all content */
+  text-align: left;
 }
 
 .notifications-text {
   margin-top: 0;
   margin-bottom: 10px;
   text-align: center;
-}
-
-.notification-badge {
-  background-color: red;
-  color: white;
-  font-size: 12px;
-  border-radius: 50%;
-  padding: 4px 6px;
-  margin-left: 5px;
 }
 
 .notification {
@@ -230,10 +219,10 @@ li {
 
 @keyframes pulseUnread {
   from {
-    background-color: #fff; /* Initial background color */
+    background-color: #f0f0f0;
   }
   to {
-    background-color: #ff6347;
+    background-color: #ff6961;
   }
 }
 
@@ -242,7 +231,7 @@ li {
 }
 
 .unread-notifications {
-  color: red;
+  color: #ff6961;
 }
 
 .pulse {
@@ -253,7 +242,27 @@ li {
     color: white;
   }
   to {
-    color: red;
+    color: #ff6961;
   }
+}
+
+.notification-link, .notification-all {
+  text-decoration: none;
+  color: inherit;
+}
+
+.notification-all{
+  text-align: center;
+  bottom: 0;
+  margin: 0;
+  margin-top: 15px;
+}
+
+.notification:hover {
+  background-color: #e0e0e0;
+}
+
+.notification-all:hover{
+  background-color: #e0e0e0;
 }
 </style>

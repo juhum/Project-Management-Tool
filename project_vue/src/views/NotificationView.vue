@@ -20,7 +20,8 @@
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
 import axios from "axios";
-
+// different color background for not readen notification, clicking on notification redirects to project and makes the notification read 
+// utils for same functions, remember to return data instead of to values - task.js project.js user.js
 export default {
   name: "NotificationView",
   data() {

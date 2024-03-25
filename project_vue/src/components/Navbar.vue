@@ -21,6 +21,7 @@
     </nav>
     <div v-if="showNotificationBox" class="notification-box">
       <div class="notification-content">
+        <p class="notifications-text">Recent notifications</p>
         <div
           v-for="notification in notifications"
           :key="notification.id"
@@ -29,7 +30,7 @@
           {{ notification.message }} <a>Check</a>
         </div>
         <router-link to="/notifications" class=""
-          >All Notifications</router-link
+          ><p class="notifications-text">All Notifications</p></router-link
         >
       </div>
     </div>
@@ -72,8 +73,8 @@ export default {
           this.notifications = response.data
             .filter((notification) =>
               notification.recipients.includes(this.currentUser.id)
-            )
-            .reverse();
+            ) 
+            .reverse().slice(0, 3);
           this.showNotificationBox = true;
           this.showNotificationBox = true;
         })
@@ -153,11 +154,22 @@ li {
   min-width: 120px;
 }
 
-.notification-content {
+/* .notification-content {
   padding: 10px;
-}
+} */
 
 .notification {
   margin-bottom: 5px;
+}
+
+.notification-content {
+  padding: 10px;
+  text-align: left; /* Center-align all content */
+}
+
+.notifications-text{
+  margin-top: 0;
+  margin-bottom: 10px; /* Add some space between paragraph and notifications */
+  text-align: center; /* Align the paragraph to the left */
 }
 </style>

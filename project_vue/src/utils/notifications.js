@@ -26,7 +26,7 @@ export const postNotification = (itemId, type, recipient, isUpdate) => {
         },
       })
       .then((response) => {
-        console.log("Notification posted successfully:", response.data);
+        console.log("Notification posted successfully:");
       })
       .catch((error) => {
         console.error("Error posting notification:", error);

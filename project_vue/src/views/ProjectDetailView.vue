@@ -349,8 +349,13 @@ export default {
           this.Tasks.push(response.data);
           this.resetForm();
           toast.success("Task created successfully!");
-          const convertAssignedToArray = [response.data.assigned_to]
-          postNotification(response.data.id, "task", convertAssignedToArray, false);
+          const convertAssignedToArray = [response.data.assigned_to];
+          postNotification(
+            response.data.id,
+            "task",
+            convertAssignedToArray,
+            false
+          );
           if (this.showChart) {
             this.$refs.pieChart.loadData();
           }
@@ -388,8 +393,13 @@ export default {
           this.isEditing = false;
           this.showForm = false;
           toast.success("Task saved successfully!");
-          const convertAssignedToArray = [response.data.assigned_to]
-          postNotification(response.data.id, "task", convertAssignedToArray, true);
+          const convertAssignedToArray = [response.data.assigned_to];
+          postNotification(
+            response.data.id,
+            "task",
+            convertAssignedToArray,
+            true
+          );
           if (this.showChart) {
             this.$refs.pieChart.loadData();
           }
@@ -672,7 +682,7 @@ button:hover {
   resize: vertical;
 }
 
-.switch-button{
+.switch-button {
   margin-left: 10px;
 }
 
@@ -701,6 +711,12 @@ button:hover {
 @media (min-width: 700px) {
   .chart {
     width: 50%;
+  }
+}
+
+@media (min-width: 1000px) {
+  .chart {
+    width: 25%;
   }
 }
 </style>

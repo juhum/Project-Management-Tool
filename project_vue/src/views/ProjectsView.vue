@@ -71,7 +71,7 @@
     <button @click="toggleChart">
       {{ showChart ? "Hide Chart" : "Show Chart" }}
     </button>
-
+    <div class="chart">
     <PieChart
       v-if="showChart"
       ref="pieChart"
@@ -80,7 +80,7 @@
       :currentUserId="currentUser.id"
       :dataField="statuses"
     />
-
+    </div>
     <div class="project-grid">
       <div
         v-for="project in filteredProjects"
@@ -518,6 +518,13 @@ button:hover {
     margin-right: 0; 
   }
 }
+
+@media (min-width: 600px) {
+  .chart {
+    width: 50%;
+  }
+}
+
 
 </style>
 

@@ -3,7 +3,7 @@ import axios from "axios";
 export const postNotification = (itemId, type, recipient, isUpdate) => {
     let message;
     if (isUpdate) {
-      message = `Your ${type} has been updated.`;
+      message = `${type} has been updated.`;
     } else {
       message = `You have been assigned to a new ${type} `;
     }

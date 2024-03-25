@@ -249,8 +249,6 @@ watch: {
           this.Projects.push(response.data);
           this.resetForm();
           toast.success("Project created successfully!");
-          console.log(response.data.id);
-          console.log(response.data.team_members);
           postNotification(response.data.id, "project", response.data.team_members, false);
           if (this.showChart) {
             this.$refs.pieChart.loadData();

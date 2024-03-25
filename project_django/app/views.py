@@ -264,6 +264,14 @@ class NotificationDetailView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def patch(self, request, pk, format=None):  # Adding PATCH method
+        notification = self.get_object(pk)
+        serializer = NotificationSerializer(notification, data=request.data, partial=True)  # Specify partial=True for partial updates
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request, pk, format=None):
         notification = self.get_object(pk)
         notification.delete()

@@ -30,10 +30,19 @@
     <div v-if="showNotificationBox" class="notification-box">
       <div class="notification-content">
         <p class="notifications-text">Recent notifications</p>
-<div v-for="notification in notifications.slice(0, 3)" :key="notification.id"
-     :class="{ notification: true, read: notification.read }"
-     class="notification">
-          {{ notification.message }} <a>Check</a>
+        <div
+          v-for="notification in notifications.slice(0, 3)"
+          :key="notification.id"
+          :class="{ notification: true, read: notification.read }"
+          class="notification"
+        >
+          {{ notification.message }}
+          <router-link
+            :to="getNotificationLink(notification)"
+            @click="markAsRead(notification)"
+          >
+            Check
+          </router-link>
         </div>
         <router-link to="/notifications" class=""
           ><p class="notifications-text">All Notifications</p></router-link
@@ -99,11 +108,37 @@ export default {
             .filter((notification) =>
               notification.recipients.includes(this.currentUser.id)
             )
-            .reverse()
+            .reverse();
         })
         .catch((error) => {
           console.error("Error fetching notifications:", error);
         });
+    },
+    markAsRead(notification) {
+      // Check if the notification is unread
+      console.log(notification.read);
+      console.log(notification.id);
+      if (!notification.read) {
+        notification.read = true;
+
+        axios
+          .patch(`/api/v1/notifications/${notification.id}/`, { read: true })
+          .then((response) => {
+            console.log("Notification marked as read");
+          })
+          .catch((error) => {
+            console.error("Error marking notification as read:", error);
+            notification.read = false;
+          });
+      }
+    },
+    getNotificationLink(notification) {
+      if (notification.project) {
+        return `/projects/${notification.project}`;
+      } else if (notification.task) {
+        return `/tasks/${notification.task}`;
+      } 
+      
     },
   },
 };
@@ -173,8 +208,8 @@ li {
 
 .notifications-text {
   margin-top: 0;
-  margin-bottom: 10px; 
-  text-align: center; 
+  margin-bottom: 10px;
+  text-align: center;
 }
 
 .notification-badge {
@@ -205,7 +240,7 @@ li {
 }
 
 .unread-notifications {
-  color: red; 
+  color: red;
 }
 
 .pulse {

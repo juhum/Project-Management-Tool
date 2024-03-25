@@ -3,9 +3,9 @@ import axios from "axios";
 export const postNotification = (itemId, type, recipient, isUpdate) => {
     let message;
     if (isUpdate) {
-      message = `The ${type} (${itemId}) has been updated.`;
+      message = `Your ${type} has been updated.`;
     } else {
-      message = `New ${type} created: ${itemId}`;
+      message = `You have been assigned to a new ${type} `;
     }
   
     const notificationData = {
@@ -26,7 +26,7 @@ export const postNotification = (itemId, type, recipient, isUpdate) => {
         },
       })
       .then((response) => {
-        console.log("Notification posted successfully:");
+        console.log("Notification posted successfully");
       })
       .catch((error) => {
         console.error("Error posting notification:", error);

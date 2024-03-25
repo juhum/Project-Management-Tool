@@ -13,14 +13,15 @@
       <ul class="navbar-right">
         <template v-if="$store.state.isAuthenticated">
           <li @click="showNotifications" class="navbar-item">
-            <span
-              :class="{
-                pulse: hasUnreadNotifications,
-                'unread-notifications': hasUnreadNotifications,
-              }"
-              >Notifications</span
-            >
-          </li>
+          <span
+            :class="{
+              pulse: hasUnreadNotifications,
+              'unread-notifications': hasUnreadNotifications,
+              'active-route': currentRouteName === 'notifications'
+            }"
+            >Notifications</span
+          >
+        </li>
           <li @click="logout" class="navbar-item">Logout</li>
         </template>
         <template v-else>
@@ -67,6 +68,9 @@ export default {
     hasUnreadNotifications() {
       return this.notifications.some((notification) => !notification.read);
     },
+    currentRouteName() {
+        return this.$route.name;
+    }
   },
   mounted() {
     this.getCurrentUser();
@@ -264,5 +268,9 @@ li {
 
 .notification-all:hover{
   background-color: #e0e0e0;
+}
+
+.active-route{
+  color:#42b983;
 }
 </style>

@@ -109,8 +109,8 @@
             <option value="" disabled selected hidden>
               Select Assigned To
             </option>
-            <option v-for="user in users" :key="user.id" :value="user.id">
-              {{ user.username }}
+            <option v-for="user in project.team_members" :key="user" :value="user">
+              {{ getUserName(user) }}
             </option>
           </select>
 

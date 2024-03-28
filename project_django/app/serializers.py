@@ -16,16 +16,6 @@ class FileSerializer(serializers.ModelSerializer):
         model = File
         fields = '__all__'
 
-class MilestoneSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Milestone
-        fields = '__all__'
-
-class ProgressReportSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProgressReport
-        fields = '__all__'
-
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification

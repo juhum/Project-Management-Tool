@@ -43,20 +43,6 @@ class File(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
-class Milestone(models.Model):
-    title = models.CharField(max_length=100)
-    description = models.TextField()
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    due_date = models.DateField()
-    status = models.CharField(max_length=50)
-
-class ProgressReport(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    milestone = models.ForeignKey(Milestone, on_delete=models.CASCADE)
-    progress_percentage = models.PositiveIntegerField()
-    notes = models.TextField()
-    date = models.DateField()
-
 class Notification(models.Model):
     message = models.TextField()
     recipients = models.ManyToManyField(User) 

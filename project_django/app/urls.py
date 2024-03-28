@@ -3,8 +3,6 @@ from .views import (
     ProjectView, ProjectDetailView,
     TaskView, TaskDetailView,
     FileView, FileDetailView,
-    MilestoneView, MilestoneDetailView,
-    ProgressReportView, ProgressReportDetailView,
     NotificationView, NotificationDetailView,
     PriorityLevelView, PriorityLevelDetailView,
     FileUploadView, FileListView,

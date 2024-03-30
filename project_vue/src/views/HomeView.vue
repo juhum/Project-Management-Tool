@@ -1,24 +1,23 @@
 <template>
-  <div class="home">
+  <div class="dashboard-container">
     <Navbar />
-    <h1>Dashboard</h1>
-    <p>Your recent tasks</p>
+    <h1 class="dashboard-title">Dashboard</h1>
+    <h3 v-if="currentUser" class="welcome-message">Welcome {{ currentUser.username }}</h3>
+
     <Footer />
   </div>
 </template>
 
-
 <script>
+import axios from "axios";
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
-import priorityLevelUtil from "@/utils/notifications.js";
 
 export default {
   name: "HomeView",
   data() {
     return {
-      tasks: [],
-      currentUserId: null,
+      currentUser: null,
     };
   },
   components: {
@@ -26,20 +25,19 @@ export default {
     Footer,
   },
   mounted() {
+    this.getCurrentUser();
     document.title = "Home";
   },
   methods: {
-    getTasks() {
+    getCurrentUser() {
       axios
-        .get(`/api/v1/tasks`, {
+        .get("/api/v1/users/me", {
           headers: {
             Authorization: `token ${localStorage.token}`,
           },
         })
         .then((response) => {
-          this.tasks = response.data.filter(
-            (task) => task.assigned_to === this.currentUserId
-          );
+          this.currentUser = response.data;
         })
         .catch((error) => {
           console.log(error);
@@ -48,3 +46,22 @@ export default {
   },
 };
 </script>
+
+<style>
+.dashboard-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.dashboard-title {
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.welcome-message {
+  color: #666;
+  font-size: 1.2rem;
+}
+</style>

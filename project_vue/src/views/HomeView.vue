@@ -1,29 +1,50 @@
 <template>
   <div class="home">
-        <Navbar />
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-      <Footer />
+    <Navbar />
+    <h1>Dashboard</h1>
+    <p>Your recent tasks</p>
+    <Footer />
   </div>
-  
 </template>
 
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-import Navbar from '@/components/Navbar.vue'
-import Footer from '@/components/Footer.vue'
+import Navbar from "@/components/Navbar.vue";
+import Footer from "@/components/Footer.vue";
+import priorityLevelUtil from "@/utils/notifications.js";
 
 export default {
-  name: 'HomeView',
+  name: "HomeView",
+  data() {
+    return {
+      tasks: [],
+      currentUserId: null,
+    };
+  },
   components: {
     Navbar,
-    HelloWorld,
     Footer,
   },
   mounted() {
     document.title = "Home";
-  }
-}
+  },
+  methods: {
+    getTasks() {
+      axios
+        .get(`/api/v1/tasks`, {
+          headers: {
+            Authorization: `token ${localStorage.token}`,
+          },
+        })
+        .then((response) => {
+          this.tasks = response.data.filter(
+            (task) => task.assigned_to === this.currentUserId
+          );
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+  },
+};
 </script>

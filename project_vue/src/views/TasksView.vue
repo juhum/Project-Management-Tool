@@ -10,8 +10,8 @@
         <h2>{{ task.title }}</h2>
         <p>{{ task.description }}</p>
         <p>Deadline: {{ task.deadline }}</p>
-        <p>Priority Level: {{ task.priority_level }}</p>
-        <p>Status: {{ task.status }}</p>
+        <p>Priority Level: {{ getPriorityLevelName(task.priority_level) }}</p>
+        <p>Status: {{ getStatusName(task.status) }}</p>
         <button @click="goToProject(task.project)">View Project</button>
       </div>
     </div>
@@ -31,6 +31,8 @@ export default {
     return {
       tasks: [],
       currentUserId: null,
+      statuses: [],
+      priorityLevels: [],
     };
   },
   components: {
@@ -39,6 +41,8 @@ export default {
   },
   mounted() {
     this.getCurrentUser();
+    this.getPriorityLevels();
+    this.getStatuses();
   },
   methods: {
     getTasks() {
@@ -77,6 +81,41 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+    getPriorityLevels() {
+      axios
+        .get(`/api/v1/priority-levels`)
+        .then((response) => {
+          this.priorityLevels = response.data;
+          this.dataField = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getPriorityLevelName(priorityLevelId) {
+      const level = this.priorityLevels.find(
+        (level) => level.id === priorityLevelId
+      );
+      return level ? level.level : "Unknown";
+    },
+    getStatuses() {
+      axios
+        .get("/api/v1/statuses/", {
+          headers: {
+            Authorization: `token ${localStorage.token}`,
+          },
+        })
+        .then((response) => {
+          this.statuses = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getStatusName(statusId) {
+      const status = this.statuses.find((status) => status.id === statusId);
+      return status ? status.name : "Unknown";
     },
   },
 };

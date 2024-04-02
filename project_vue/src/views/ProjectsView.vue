@@ -144,7 +144,7 @@ import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import PieChart from "@/components/Chart";
 import { postNotification } from "@/utils/notifications.js";
-import moment from 'moment'
+import moment from "moment";
 
 export default {
   name: "ProjectsView",
@@ -252,6 +252,11 @@ export default {
         });
     },
     addProject() {
+      if (this.newProject.end_date < this.newProject.start_date) {
+        toast.error("End date cannot be earlier than start date.");
+        return; // Stop execution if end date is earlier than start date
+      }
+
       axios
         .post("/api/v1/projects/", this.newProject, {
           headers: {
@@ -289,6 +294,10 @@ export default {
       this.showForm = true;
     },
     saveProject() {
+      if (this.newProject.end_date < this.newProject.start_date) {
+        toast.error("End date cannot be earlier than start date.");
+        return; // Stop execution if end date is earlier than start date
+      }
       axios
         .put(`/api/v1/projects/${this.projectToEdit.id}/`, this.newProject, {
           headers: {

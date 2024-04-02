@@ -1,5 +1,6 @@
 <template>
   <div class="project-manager">
+
     <div class="project-manager__header">
       <Navbar />
       <h1>Projects</h1>
@@ -123,6 +124,15 @@
         <p>Loading project details...</p>
         <div class="loading"></div>
       </div> -->
+          <div v-if="showConfirmation" class="modal-wrapper">
+      <div class="modal">
+        <p>Are you sure you want to delete this project?</p>
+        <div class="modal-buttons">
+          <button @click="confirmDelete">Delete</button>
+          <button @click="cancelDelete">Cancel</button>
+        </div>
+      </div>
+    </div>
     <Footer />
   </div>
 </template>
@@ -157,6 +167,8 @@ export default {
       statuses: [],
       selectedStatus: "",
       showChart: false,
+      projectToDelete: null,
+      showConfirmation: false
     };
   },
   components: {
@@ -298,20 +310,36 @@ watch: {
         });
     },
     deleteProject(project) {
-      axios
-        .delete(`/api/v1/projects/${project.id}/`)
-        .then(() => {
-          this.Projects = this.Projects.filter((p) => p.id !== project.id);
-          console.log("Project deleted successfully");
-          toast.success("Project deleted successfully!");
-          if (this.showChart) {
-            this.$refs.pieChart.loadData();
-          }
-        })
-        .catch((error) => {
-          console.error("Error deleting Project:", error);
-          toast.error("An error occurred while deleting the task.");
-        });
+      this.projectToDelete = project;
+      this.showConfirmation = true;
+    },
+
+    confirmDelete() {
+      if (this.projectToDelete) {
+        axios
+          .delete(`/api/v1/projects/${this.projectToDelete.id}/`)
+          .then(() => {
+            this.Projects = this.Projects.filter((p) => p.id !== this.projectToDelete.id);
+            console.log("Project deleted successfully");
+            toast.success("Project deleted successfully!");
+            if (this.showChart) {
+              this.$refs.pieChart.loadData();
+            }
+          })
+          .catch((error) => {
+            console.error("Error deleting Project:", error);
+            toast.error("An error occurred while deleting the task.");
+          })
+          .finally(() => {
+            this.showConfirmation = false;
+            this.projectToDelete = null;
+          });
+      }
+    },
+
+    cancelDelete() {
+      this.showConfirmation = false;
+      this.projectToDelete = null;
     },
     getUserUsername(memberId) {
       const user = this.users.find((user) => user.id === memberId);
@@ -523,6 +551,37 @@ button:hover {
   }
 }
 
+.modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.modal p {
+  margin-bottom: 10px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-buttons button {
+  margin-left: 10px;
+}
 
 </style>
 

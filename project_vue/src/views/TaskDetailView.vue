@@ -53,6 +53,9 @@ export default {
         })
         .catch((error) => {
           console.error("Error fetching task details:", error);
+          if (error.response && error.response.status === 404) {
+            this.$router.push({ name: "notfound" });
+          }
         });
     },
     goToProject(projectId) {

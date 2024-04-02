@@ -79,7 +79,7 @@ class TaskDetailView(APIView):
         try:
             return Task.objects.get(pk=pk)
         except Task.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            raise Http404
 
     def get(self, request, pk, format=None):
         task = self.get_object(pk)

@@ -1,6 +1,5 @@
 <template>
   <div class="project-manager">
-
     <div class="project-manager__header">
       <Navbar />
       <h1>Projects</h1>
@@ -73,14 +72,14 @@
       {{ showChart ? "Hide Chart" : "Show Chart" }}
     </button>
     <div class="chart">
-    <PieChart
-      v-if="showChart"
-      ref="pieChart"
-      :showOnlyUserChecker="showOnlyUserProjects"
-      :responseData="Projects"
-      :currentUserId="currentUser.id"
-      :dataField="statuses"
-    />
+      <PieChart
+        v-if="showChart"
+        ref="pieChart"
+        :showOnlyUserChecker="showOnlyUserProjects"
+        :responseData="Projects"
+        :currentUserId="currentUser.id"
+        :dataField="statuses"
+      />
     </div>
     <div class="project-grid">
       <div
@@ -124,7 +123,7 @@
         <p>Loading project details...</p>
         <div class="loading"></div>
       </div> -->
-          <div v-if="showConfirmation" class="modal-wrapper">
+    <div v-if="showConfirmation" class="modal-wrapper">
       <div class="modal">
         <p>Are you sure you want to delete this project?</p>
         <div class="modal-buttons">
@@ -168,7 +167,7 @@ export default {
       selectedStatus: "",
       showChart: false,
       projectToDelete: null,
-      showConfirmation: false
+      showConfirmation: false,
     };
   },
   components: {
@@ -199,15 +198,15 @@ export default {
       }
     },
   },
-watch: {
-  showOnlyUserProjects(newVal, oldVal) {
-    if (newVal !== oldVal && this.showChart) {
-      this.$nextTick(() => {
-        this.$refs.pieChart.loadData();
-      });
-    }
+  watch: {
+    showOnlyUserProjects(newVal, oldVal) {
+      if (newVal !== oldVal && this.showChart) {
+        this.$nextTick(() => {
+          this.$refs.pieChart.loadData();
+        });
+      }
+    },
   },
-},
 
   methods: {
     getProjects() {
@@ -261,7 +260,12 @@ watch: {
           this.Projects.push(response.data);
           this.resetForm();
           toast.success("Project created successfully!");
-          postNotification(response.data.id, "project", response.data.team_members, false);
+          postNotification(
+            response.data.id,
+            "project",
+            response.data.team_members,
+            false
+          );
           if (this.showChart) {
             this.$refs.pieChart.loadData();
           }
@@ -299,7 +303,12 @@ watch: {
           this.showForm = false;
           toast.success("Project saved successfully!");
           console.log(response.data.team_members);
-          postNotification(response.data.id, "project", response.data.team_members, true);
+          postNotification(
+            response.data.id,
+            "project",
+            response.data.team_members,
+            true
+          );
           if (this.showChart) {
             this.$refs.pieChart.loadData();
           }
@@ -319,20 +328,22 @@ watch: {
         axios
           .delete(`/api/v1/projects/${this.projectToDelete.id}/`)
           .then(() => {
-            this.Projects = this.Projects.filter((p) => p.id !== this.projectToDelete.id);
+            this.Projects = this.Projects.filter(
+              (p) => p.id !== this.projectToDelete.id
+            );
             console.log("Project deleted successfully");
             toast.success("Project deleted successfully!");
-            if (this.showChart) {
-              this.$refs.pieChart.loadData();
-            }
           })
           .catch((error) => {
             console.error("Error deleting Project:", error);
-            toast.error("An error occurred while deleting the task.");
+            toast.error("An error occurred while deleting the project.");
           })
           .finally(() => {
             this.showConfirmation = false;
             this.projectToDelete = null;
+            if (this.showChart) {
+              this.$refs.pieChart.refreshData();
+            }
           });
       }
     },
@@ -524,24 +535,24 @@ button:hover {
 
 .project-manager__actions {
   display: flex;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
 .project-manager__actions button {
-  margin-bottom: 10px; 
+  margin-bottom: 10px;
 }
 
 @media (max-width: 768px) {
   .project-manager__actions {
-    flex-direction: column; 
-    align-items: flex-start; 
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .project-manager__actions button {
-    margin-right: 0; 
+    margin-right: 0;
   }
 }
 
@@ -582,6 +593,5 @@ button:hover {
 .modal-buttons button {
   margin-left: 10px;
 }
-
 </style>
 

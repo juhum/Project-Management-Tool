@@ -109,7 +109,11 @@
             <option value="" disabled selected hidden>
               Select Assigned To
             </option>
-            <option v-for="user in project.team_members" :key="user" :value="user">
+            <option
+              v-for="user in project.team_members"
+              :key="user"
+              :value="user"
+            >
               {{ getUserName(user) }}
             </option>
           </select>
@@ -175,6 +179,15 @@
         </div>
       </div>
     </div>
+    <div v-if="showConfirmation" class="modal-wrapper">
+      <div class="modal">
+        <p>Are you sure you want to delete this project?</p>
+        <div class="modal-buttons">
+          <button @click="confirmDelete">Delete</button>
+          <button @click="cancelDelete">Cancel</button>
+        </div>
+      </div>
+    </div>
     <!-- </div>
     <div v-else>
       <p>Loading project details...</p>
@@ -221,6 +234,8 @@ export default {
       selectedPriorityLevel: "",
       showChart: false,
       dataField: [],
+      taskToDelete: null,
+      showConfirmation: false,
     };
   },
   components: {
@@ -357,7 +372,7 @@ export default {
             false
           );
           if (this.showChart) {
-            this.$refs.pieChart.loadData();
+            this.$refs.pieChart.refreshData();
           }
         })
         .catch((error) => {
@@ -410,20 +425,36 @@ export default {
         });
     },
     deleteTask(task) {
-      axios
-        .delete(`/api/v1/tasks/${task.id}/`)
-        .then(() => {
-          this.Tasks = this.Tasks.filter((t) => t.id !== task.id);
-          console.log("Task deleted successfully");
-          toast.success("Task deleted successfully!");
-          if (this.showChart) {
-            this.$refs.pieChart.loadData();
-          }
-        })
-        .catch((error) => {
-          console.error("Error deleting task:", error);
-          toast.error("An error occurred while deleting the task.");
-        });
+      this.taskToDelete = task;
+      this.showConfirmation = true;
+    },
+    confirmDelete() {
+      if (this.taskToDelete) {
+        axios
+          .delete(`/api/v1/tasks/${this.taskToDelete.id}/`)
+          .then(() => {
+            this.Tasks = this.Tasks.filter(
+              (t) => t.id !== this.taskToDelete.id
+            );
+            console.log("Task deleted successfully");
+            toast.success("Task deleted successfully!");
+          })
+          .catch((error) => {
+            console.error("Error deleting Task:", error);
+            toast.error("An error occurred while deleting the task.");
+          })
+          .finally(() => {
+            this.showConfirmation = false;
+            this.projectToDelete = null;
+            if (this.showChart) {
+              this.$refs.pieChart.loadData();
+            }
+          });
+      }
+    },
+    cancelDelete() {
+      this.showConfirmation = false;
+      this.taskToDelete = null;
     },
     getUserUsername(memberId) {
       const user = this.users.find((user) => user.id === memberId);
@@ -718,5 +749,37 @@ button:hover {
   .chart {
     width: 25%;
   }
+}
+
+.modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.modal p {
+  margin-bottom: 10px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-buttons button {
+  margin-left: 10px;
 }
 </style>

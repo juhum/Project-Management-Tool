@@ -8,7 +8,7 @@
     <div class="task-detail">
       <h2>{{ task.title }}</h2>
       <p>{{ task.description }}</p>
-      <p>Deadline: {{ task.deadline }}</p>
+      <p>Deadline: {{ format_date(task.deadline) }}</p>
       <p>Priority Level: {{ getPriorityLevelName(task.priority_level) }}</p>
       <p>Status: {{ getStatusName(task.status) }}</p>
       <button @click="goToProject(task.project)">View Project</button>
@@ -22,6 +22,7 @@
 import axios from "axios";
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
+import moment from "moment";
 
 export default {
   name: "TaskDetailView",
@@ -114,6 +115,11 @@ export default {
     getStatusName(statusId) {
       const status = this.statuses.find((status) => status.id === statusId);
       return status ? status.name : "Unknown";
+    },
+    format_date(value) {
+      if (value) {
+        return moment(String(value)).format("DD-MM-YYYY");
+      }
     },
   },
 };

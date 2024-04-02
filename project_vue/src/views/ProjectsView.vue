@@ -101,8 +101,8 @@
         </button>
         <h2>{{ project.title }}</h2>
         <p>{{ project.description }}</p>
-        <p>Start Date: {{ project.start_date }}</p>
-        <p>End Date: {{ project.end_date }}</p>
+        <p>Start Date: {{ format_date(project.start_date) }}</p>
+        <p>End Date: {{ format_date(project.end_date) }}</p>
         <p>Status: {{ getStatusName(project.status) }}</p>
         <p>Team Members:</p>
         <ul>
@@ -144,6 +144,8 @@ import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import PieChart from "@/components/Chart";
 import { postNotification } from "@/utils/notifications.js";
+import moment from 'moment'
+
 export default {
   name: "ProjectsView",
   data() {
@@ -302,7 +304,6 @@ export default {
           this.isEditing = false;
           this.showForm = false;
           toast.success("Project saved successfully!");
-          console.log(response.data.team_members);
           postNotification(
             response.data.id,
             "project",
@@ -398,6 +399,11 @@ export default {
     },
     toggleChart() {
       this.showChart = !this.showChart;
+    },
+    format_date(value) {
+      if (value) {
+        return moment(String(value)).format("DD-MM-YYYY");
+      }
     },
   },
 };

@@ -4,8 +4,8 @@
     <div class="project-page" v-if="project">
       <h2>Project: {{ project.title }}</h2>
       <p>{{ project.description }}</p>
-      <p>Start Date: {{ project.start_date }}</p>
-      <p>End Date: {{ project.end_date }}</p>
+      <p>Start Date: {{ format_date(project.start_date) }}</p>
+      <p>End Date: {{ format_date(project.end_date) }}</p>
       <p>Status: {{ getStatusName(project.status) }}</p>
       <p>Team Members:</p>
       <ul>
@@ -205,6 +205,7 @@ import PieChart from "@/components/Chart";
 import { toast } from "vue3-toastify";
 import { postNotification } from "@/utils/notifications.js";
 import "vue3-toastify/dist/index.css";
+import moment from "moment";
 
 export default {
   name: "ProjectPage",
@@ -592,6 +593,11 @@ export default {
         this.$nextTick(() => {
           this.$refs.pieChart.loadData();
         });
+      }
+    },
+    format_date(value) {
+      if (value) {
+        return moment(String(value)).format("DD-MM-YYYY");
       }
     },
   },

@@ -170,6 +170,7 @@ export default {
 
 .navbar-item:hover {
   background-color: #555;
+  border-radius: 4px;
 }
 
 .navbar-right {

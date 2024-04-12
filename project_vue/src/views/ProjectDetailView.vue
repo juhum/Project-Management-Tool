@@ -181,7 +181,7 @@
     </div>
     <div v-if="showConfirmation" class="modal-wrapper">
       <div class="modal">
-        <p>Are you sure you want to delete this project?</p>
+        <p>Are you sure you want to delete this task?</p>
         <div class="modal-buttons">
           <button @click="confirmDelete">Delete</button>
           <button @click="cancelDelete">Cancel</button>

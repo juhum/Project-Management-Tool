@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  django:
+    container_name: backend_django
+    restart: always
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+    volumes:
+      - ./project_django:/app
+    ports:
+      - "8000:8000"
+    expose:
+      - 8000
+
+  vue:
+    container_name: frontend_vue
+    restart: always
+    build:
+      context: .
+      dockerfile: ./compose/vue/Dockerfile
+    volumes:
+      - ./project_vue:/app
+    ports:
+      - "8080:8080"
+    expose:
+      - 8080

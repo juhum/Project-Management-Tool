@@ -1,7 +1,7 @@
 <template>
   <footer class="footer">
     <div class="container">
-      <span class="text-muted">Your footer content goes here</span>
+      <span class="text-muted">Project Management Web Application 2024</span>
     </div>
   </footer>
 </template>

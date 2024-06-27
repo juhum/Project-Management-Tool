@@ -63,6 +63,40 @@ class ProjectTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Project.objects.count(), 0)
 
+    def test_unauthorized_access(self):
+        self.client.logout()
+
+        response = self.client.get(reverse('project-list'))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        data = {
+            'title': 'New Project',
+            'description': 'New project description',
+            'start_date': '2024-02-01',
+            'end_date': '2024-11-30',
+            'status': self.status.id,
+            'team_members': [self.user.id]
+        }
+        response = self.client.post(reverse('project-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.client.get(reverse('project-detail', kwargs={'pk': self.project.id}))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        data = {
+            'title': 'Updated Project',
+            'description': 'Updated project description',
+            'start_date': '2024-02-01',
+            'end_date': '2024-11-30',
+            'status': self.status.id,
+            'team_members': [self.user.id]
+        }
+        response = self.client.put(reverse('project-detail', kwargs={'pk': self.project.id}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.client.delete(reverse('project-detail', kwargs={'pk': self.project.id}))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
 class TaskTests(APITestCase):
     def setUp(self):
         self.client = APIClient()
@@ -129,6 +163,42 @@ class TaskTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Task.objects.count(), 0)
 
+    def test_unauthorized_access(self):
+        self.client.logout()
+
+        response = self.client.get(reverse('task-list'))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        data = {
+            'title': 'New Task',
+            'description': 'New task description',
+            'project': self.project.id,
+            'assigned_to': self.user.id,
+            'priority_level': self.priority_level.id,
+            'deadline': '2024-07-01',
+            'status': Status.objects.create(name='In Progress').id
+        }
+        response = self.client.post(reverse('task-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.client.get(reverse('task-detail', kwargs={'pk': self.task.id}))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        data = {
+            'title': 'Updated Task',
+            'description': 'Updated task description',
+            'project': self.project.id,
+            'assigned_to': self.user.id,
+            'priority_level': self.priority_level.id,
+            'deadline': '2024-07-01',
+            'status': Status.objects.create(name='Completed').id
+        }
+        response = self.client.put(reverse('task-detail', kwargs={'pk': self.task.id}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.client.delete(reverse('task-detail', kwargs={'pk': self.task.id}))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
 class FileTests(APITestCase):
     def setUp(self):
         self.client = APIClient()
@@ -191,6 +261,46 @@ class FileTests(APITestCase):
         response = self.client.delete(reverse('file-detail', kwargs={'pk': self.file.id}))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(File.objects.count(), 0)
+
+    def test_unauthorized_access(self):
+        self.client.logout()
+
+        response = self.client.get(reverse('file-list'))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        with open('temp_file.txt', 'w') as f:
+            f.write('temporary file content')
+
+        with open('temp_file.txt', 'rb') as f:
+            data = {
+                'file': f,
+                'uploaded_by': self.user.id,
+                'project': self.project.id
+            }
+            response = self.client.post(reverse('file-list'), data, format='multipart')
+            self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        os.remove('temp_file.txt')
+
+        response = self.client.get(reverse('file-detail', kwargs={'pk': self.file.id}))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        with open('temp_file.txt', 'w') as f:
+            f.write('updated temporary file content')
+
+        with open('temp_file.txt', 'rb') as f:
+            data = {
+                'file': f,
+                'uploaded_by': self.user.id,
+                'project': self.project.id
+            }
+            response = self.client.put(reverse('file-detail', kwargs={'pk': self.file.id}), data, format='multipart')
+            self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        os.remove('temp_file.txt')
+
+        response = self.client.delete(reverse('file-detail', kwargs={'pk': self.file.id}))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 class NotificationTests(APITestCase):
     def setUp(self):
@@ -266,3 +376,38 @@ class NotificationTests(APITestCase):
         response = self.client.delete(reverse('notification-detail', kwargs={'pk': self.notification.id}))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Notification.objects.count(), 0)
+
+    def test_unauthorized_access(self):
+        self.client.logout()
+
+        response = self.client.get(reverse('notification-list'))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        data = {
+            'message': 'New notification',
+            'recipients': [self.user.id],
+            'project': self.project.id,
+            'task': self.task.id
+        }
+        response = self.client.post(reverse('notification-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.client.get(reverse('notification-detail', kwargs={'pk': self.notification.id}))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        data = {
+            'message': 'Updated notification',
+            'recipients': [self.user.id],
+            'read': True,
+            'project': self.project.id,
+            'task': self.task.id
+        }
+        response = self.client.put(reverse('notification-detail', kwargs={'pk': self.notification.id}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        data = {'read': True}
+        response = self.client.patch(reverse('notification-detail', kwargs={'pk': self.notification.id}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.client.delete(reverse('notification-detail', kwargs={'pk': self.notification.id}))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

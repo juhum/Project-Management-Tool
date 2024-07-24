@@ -11,11 +11,6 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = '__all__'
 
-class FileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = File
-        fields = '__all__'
-
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification

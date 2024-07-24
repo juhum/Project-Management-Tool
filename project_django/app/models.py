@@ -14,8 +14,7 @@ class Project(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
-    team_members = models.ManyToManyField(User)  # Use Djoser's User model
-    # not sure if these methods needed later
+    team_members = models.ManyToManyField(User)
     def __str__(self):
         return self.title
 
@@ -29,7 +28,7 @@ class Task(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE)  # Use Djoser's User model
+    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE)
     priority_level = models.ForeignKey(PriorityLevel, on_delete=models.CASCADE)
     deadline = models.DateField()
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
@@ -38,10 +37,11 @@ class Task(models.Model):
         return self.title
 
 class File(models.Model):
-    file = models.FileField(upload_to='files/')
-    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)  # Use Djoser's User model
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    pass
+    # file = models.FileField(upload_to='files/')
+    # uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    # uploaded_at = models.DateTimeField(auto_now_add=True)
+    # project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
 class Notification(models.Model):
     message = models.TextField()

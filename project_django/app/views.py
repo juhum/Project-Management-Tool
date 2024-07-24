@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Project, Task, File, Notification, PriorityLevel, ProjectFile, Status
-from .serializers import ProjectSerializer, TaskSerializer, FileSerializer, NotificationSerializer, PriorityLevelSerializer, ProjectFileSerializer, StatusSerializer
+from .models import Project, Task, Notification, PriorityLevel, ProjectFile, Status
+from .serializers import ProjectSerializer, TaskSerializer, NotificationSerializer, PriorityLevelSerializer, ProjectFileSerializer, StatusSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 import os
@@ -101,46 +101,10 @@ class TaskDetailView(APIView):
 
 
 class FileView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, format=None):
-        queryset = File.objects.all()
-        serializer = FileSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = FileSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    pass
 
 class FileDetailView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self, pk):
-        try:
-            return File.objects.get(pk=pk)
-        except File.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def get(self, request, pk, format=None):
-        file = self.get_object(pk)
-        serializer = FileSerializer(file)
-        return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        file = self.get_object(pk)
-        serializer = FileSerializer(file, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        file = self.get_object(pk)
-        file.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    pass
 
 class NotificationView(APIView):
     permission_classes = [IsAuthenticated]
